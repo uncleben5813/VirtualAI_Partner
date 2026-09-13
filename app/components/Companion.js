@@ -9,68 +9,107 @@ const STORAGE = {
   settings: "maya_settings_v3",
 };
 
-const moods = {
-  happy: { label: "Happy", emoji: "😊" },
-  caring: { label: "Caring", emoji: "❤️" },
-  playful: { label: "Playful", emoji: "✨" },
-  calm: { label: "Calm", emoji: "🌙" },
-  upset: { label: "Upset", emoji: "🥺" },
+const MOODS = {
+  happy: {
+    label: "Happy",
+    emoji: "😊",
+  },
+  caring: {
+    label: "Caring",
+    emoji: "❤️",
+  },
+  playful: {
+    label: "Playful",
+    emoji: "✨",
+  },
+  calm: {
+    label: "Calm",
+    emoji: "🌙",
+  },
+  upset: {
+    label: "Upset",
+    emoji: "🥺",
+  },
 };
 
-const defaultSettings = {
+const DEFAULT_SETTINGS = {
   name: "Maya",
-  personality:
-    "Warm, caring, friendly, natural and emotionally aware. Speak naturally like a supportive AI companion.",
-  voiceEnabled: true,
+  language: "BM + Manglish",
+  personality: "warm, caring, playful, natural and intelligent",
   autoSpeak: false,
+  voiceEnabled: true,
+  voiceRate: 1,
 };
-
-const defaultMessage = {
-  role: "assistant",
-  content:
-    "Hi, I'm Maya. 😊 I'm ready to chat with you. Tell me what's on your mind.",
-  createdAt: Date.now(),
-};
-
-function safeParse(value, fallback) {
-  try {
-    return JSON.parse(value);
-  } catch {
-    return fallback;
-  }
-}
-
-function loadStorage(key, fallback) {
-  if (typeof window === "undefined") return fallback;
-
-  try {
-    const value = localStorage.getItem(key);
-    if (!value) return fallback;
-    return safeParse(value, fallback);
-  } catch {
-    return fallback;
-  }
-}
-
-function saveStorage(key, value) {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // Ignore localStorage errors.
-  }
-}
 
 function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function getMoodFromText(text) {
+function safeRead(key, fallback) {
+  if (typeof window === "undefined") {
+    return fallback;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(key);
+
+    if (!raw) {
+      return fallback;
+    }
+
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function safeWrite(key, value) {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // Ignore storage errors.
+  }
+}
+
+function normalizeMood(value) {
+  if (!value) {
+    return "calm";
+  }
+
+  const mood = String(value).toLowerCase();
+
+  if (MOODS[mood]) {
+    return mood;
+  }
+
+  if (/happy|excited|joy|cheerful|positive|senang|gembira/.test(mood)) {
+    return "happy";
+  }
+
+  if (/care|caring|love|warm|support|sayang|prihatin/.test(mood)) {
+    return "caring";
+  }
+
+  if (/playful|fun|tease|ceria|gurau|seronok/.test(mood)) {
+    return "playful";
+  }
+
+  if (/sad|upset|hurt|down|sedih|kecewa/.test(mood)) {
+    return "upset";
+  }
+
+  return "calm";
+}
+
+function detectMoodFromText(text) {
   const value = String(text || "").toLowerCase();
 
   if (
-    /haha|lol|😂|🤣|seronok|best|happy|gembira|lawak|kelakar|nice|yay/.test(
+    /haha|lol|😂|🤣|best|seronok|gembira|happy|nice|yay|terbaik/.test(
       value
     )
   ) {
@@ -78,7 +117,7 @@ function getMoodFromText(text) {
   }
 
   if (
-    /sayang|rindu|terima kasih|thanks|thank you|jaga|risau|care|support/.test(
+    /sayang|thanks|thank you|terima kasih|jaga|risau|care|prihatin/.test(
       value
     )
   ) {
@@ -86,230 +125,369 @@ function getMoodFromText(text) {
   }
 
   if (
-    /hehe|😉|😏|main-main|gurau|joke|fun|usik|nakal/.test(value)
+    /haha|hehe|gurau|lol|joke|lawak|fun|main-main|😂|🤣/.test(value)
   ) {
     return "playful";
   }
 
   if (
-    /sedih|down|penat|stress|stressed|tak okay|tak okey|masalah|susah|risau/.test(
+    /sedih|kecewa|marah|geram|stress|upset|sorry|maaf|tak okay|tak ok/.test(
       value
     )
   ) {
-    return "caring";
-  }
-
-  if (/marah|geram|angry|annoyed|benci|menyampah/.test(value)) {
     return "upset";
   }
 
   return "calm";
 }
 
+function formatTime(timestamp) {
+  if (!timestamp) {
+    return "";
+  }
+
+  try {
+    return new Date(timestamp).toLocaleTimeString("ms-MY", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
+}
+
 export default function Companion() {
-  const [messages, setMessages] = useState([defaultMessage]);
+  const [messages, setMessages] = useState([]);
   const [mood, setMood] = useState("calm");
   const [memory, setMemory] = useState([]);
-  const [settings, setSettings] = useState(defaultSettings);
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
 
   const [input, setInput] = useState("");
-  const [image, setImage] = useState(null);
+  const [attachment, setAttachment] = useState(null);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [speaking, setSpeaking] = useState(false);
 
-  const [reaction, setReaction] = useState("calm");
+  const [reaction, setReaction] = useState("idle");
   const [showSettings, setShowSettings] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const fileRef = useRef(null);
+  const fileInputRef = useRef(null);
   const recognitionRef = useRef(null);
-
-  const currentMood = useMemo(() => {
-    return moods[mood] || moods.calm;
-  }, [mood]);
+  const reactionTimerRef = useRef(null);
 
   useEffect(() => {
-    const storedMessages = loadStorage(STORAGE.messages, null);
-    const storedMood = loadStorage(STORAGE.mood, null);
-    const storedMemory = loadStorage(STORAGE.memory, []);
-    const storedSettings = loadStorage(STORAGE.settings, null);
+    const storedMessages = safeRead(STORAGE.messages, null);
+    const storedMood = safeRead(STORAGE.mood, "calm");
+    const storedMemory = safeRead(STORAGE.memory, []);
+    const storedSettings = safeRead(
+      STORAGE.settings,
+      DEFAULT_SETTINGS
+    );
 
     if (Array.isArray(storedMessages) && storedMessages.length > 0) {
       setMessages(storedMessages);
+    } else {
+      setMessages([
+        {
+          id: "maya-welcome",
+          role: "assistant",
+          content: "Hi, I'm Maya. 😊 Nak sembang apa hari ni?",
+          createdAt: Date.now(),
+        },
+      ]);
     }
 
-    if (typeof storedMood === "string" && moods[storedMood]) {
-      setMood(storedMood);
-    }
+    setMood(normalizeMood(storedMood));
 
     if (Array.isArray(storedMemory)) {
       setMemory(storedMemory);
     }
 
-    if (storedSettings && typeof storedSettings === "object") {
-      setSettings({
-        ...defaultSettings,
-        ...storedSettings,
-      });
-    }
+    setSettings({
+      ...DEFAULT_SETTINGS,
+      ...(storedSettings || {}),
+    });
+
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
-    saveStorage(STORAGE.messages, messages);
-  }, [messages]);
+    if (!hydrated) {
+      return;
+    }
+
+    safeWrite(STORAGE.messages, messages);
+  }, [messages, hydrated]);
 
   useEffect(() => {
-    saveStorage(STORAGE.mood, mood);
-  }, [mood]);
+    if (!hydrated) {
+      return;
+    }
+
+    safeWrite(STORAGE.mood, mood);
+  }, [mood, hydrated]);
 
   useEffect(() => {
-    saveStorage(STORAGE.memory, memory);
-  }, [memory]);
+    if (!hydrated) {
+      return;
+    }
+
+    safeWrite(STORAGE.memory, memory);
+  }, [memory, hydrated]);
 
   useEffect(() => {
-    saveStorage(STORAGE.settings, settings);
-  }, [settings]);
+    if (!hydrated) {
+      return;
+    }
+
+    safeWrite(STORAGE.settings, settings);
+  }, [settings, hydrated]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-    });
-  }, [messages, isLoading]);
+    const timer = window.setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+      });
+    }, 40);
+
+    return () => window.clearTimeout(timer);
+  }, [messages, loading]);
 
   useEffect(() => {
     return () => {
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.stop();
-        } catch {}
+      if (typeof window !== "undefined") {
+        window.speechSynthesis?.cancel();
       }
 
-      if (typeof window !== "undefined" && window.speechSynthesis) {
-        window.speechSynthesis.cancel();
+      recognitionRef.current?.stop();
+
+      if (reactionTimerRef.current) {
+        window.clearTimeout(reactionTimerRef.current);
       }
     };
   }, []);
 
-  function setTemporaryReaction(nextReaction, duration = 1800) {
+  function temporaryReaction(nextReaction, duration = 1800) {
     setReaction(nextReaction);
 
-    window.setTimeout(() => {
-      setReaction("calm");
+    if (reactionTimerRef.current) {
+      window.clearTimeout(reactionTimerRef.current);
+    }
+
+    reactionTimerRef.current = window.setTimeout(() => {
+      setReaction("idle");
     }, duration);
   }
 
-  function updateMood(nextMood) {
-    if (!moods[nextMood]) return;
-    setMood(nextMood);
+  function updateSetting(key, value) {
+    setSettings((current) => ({
+      ...current,
+      [key]: value,
+    }));
   }
 
-  function handleTyping(value) {
+  function handleTyping(event) {
+    const value = event.target.value;
+
     setInput(value);
 
     if (value.trim()) {
-      setTemporaryReaction("typing", 1200);
-    } else {
-      setReaction("calm");
+      setReaction("typing");
+    } else if (!loading && !listening && !speaking) {
+      setReaction("idle");
     }
   }
 
-  function speakText(text) {
-    if (!settings.voiceEnabled) return;
-    if (typeof window === "undefined" || !window.speechSynthesis) return;
+  async function handleImage(event) {
+    const file = event.target.files?.[0];
 
-    const clean = String(text || "").trim();
+    if (!file) {
+      return;
+    }
 
-    if (!clean) return;
+    if (!file.type.startsWith("image/")) {
+      window.alert("Please select an image file.");
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      window.alert("Image terlalu besar. Maximum 8MB.");
+      return;
+    }
+
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+
+        reader.readAsDataURL(file);
+      });
+
+      setAttachment({
+        name: file.name,
+        type: file.type,
+        data: dataUrl,
+      });
+
+      temporaryReaction("curious", 1500);
+    } catch {
+      window.alert("Unable to read image.");
+    }
+
+    event.target.value = "";
+  }
+
+  function removeAttachment() {
+    setAttachment(null);
+  }
+
+  function speak(text) {
+    if (
+      !settings.voiceEnabled ||
+      typeof window === "undefined" ||
+      !("speechSynthesis" in window)
+    ) {
+      return;
+    }
+
+    const cleanText = String(text || "").trim();
+
+    if (!cleanText) {
+      return;
+    }
 
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(clean);
+    const utterance = new SpeechSynthesisUtterance(cleanText);
 
-    utterance.lang = "en-US";
-    utterance.rate = 1;
-    utterance.pitch = 1;
+    const voices = window.speechSynthesis.getVoices();
+
+    const preferredVoice =
+      voices.find((voice) => voice.lang?.toLowerCase() === "ms-my") ||
+      voices.find((voice) => voice.lang?.toLowerCase() === "en-my") ||
+      voices.find((voice) => voice.lang?.toLowerCase() === "en-sg") ||
+      voices.find((voice) => voice.lang?.toLowerCase() === "en-us") ||
+      voices.find((voice) => voice.lang?.toLowerCase() === "en-gb");
+
+    if (preferredVoice) {
+      utterance.voice = preferredVoice;
+    }
+
+    utterance.lang = preferredVoice?.lang || "ms-MY";
+    utterance.rate = Number(settings.voiceRate) || 1;
+    utterance.pitch = 1.02;
+    utterance.volume = 1;
 
     utterance.onstart = () => {
-      setIsSpeaking(true);
-      setTemporaryReaction("speaking", 1000);
+      setSpeaking(true);
+      setReaction("speaking");
     };
 
     utterance.onend = () => {
-      setIsSpeaking(false);
-      setReaction("calm");
+      setSpeaking(false);
+
+      if (!loading && !listening) {
+        setReaction("idle");
+      }
     };
 
     utterance.onerror = () => {
-      setIsSpeaking(false);
-      setReaction("calm");
+      setSpeaking(false);
+
+      if (!loading && !listening) {
+        setReaction("idle");
+      }
     };
 
     window.speechSynthesis.speak(utterance);
   }
 
   function stopSpeaking() {
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
+    if (typeof window !== "undefined") {
+      window.speechSynthesis?.cancel();
     }
 
-    setIsSpeaking(false);
-    setReaction("calm");
+    setSpeaking(false);
+
+    if (!loading && !listening) {
+      setReaction("idle");
+    }
   }
 
-  function toggleVoiceInput() {
-    if (typeof window === "undefined") return;
-
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      alert("Voice input is not supported by this browser.");
+  function toggleListening() {
+    if (typeof window === "undefined") {
       return;
     }
 
-    if (isListening && recognitionRef.current) {
-      try {
-        recognitionRef.current.stop();
-      } catch {}
+    if (listening) {
+      recognitionRef.current?.stop();
+      setListening(false);
 
-      setIsListening(false);
-      setReaction("calm");
+      if (!loading && !speaking) {
+        setReaction("idle");
+      }
+
+      return;
+    }
+
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      window.alert(
+        "Voice input tidak disokong oleh browser ini. Cuba Chrome atau Safari yang menyokong Speech Recognition."
+      );
       return;
     }
 
     const recognition = new SpeechRecognition();
 
-    recognition.lang = "en-US";
+    recognition.lang = "ms-MY";
     recognition.continuous = false;
     recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
-      setIsListening(true);
-      setTemporaryReaction("listening", 3000);
+      setListening(true);
+      setReaction("listening");
     };
 
     recognition.onresult = (event) => {
       let transcript = "";
 
-      for (let i = event.resultIndex; i < event.results.length; i += 1) {
-        transcript += event.results[i][0].transcript;
+      for (
+        let index = event.resultIndex;
+        index < event.results.length;
+        index += 1
+      ) {
+        transcript += event.results[index][0].transcript;
       }
 
       setInput(transcript);
     };
 
     recognition.onerror = () => {
-      setIsListening(false);
-      setReaction("calm");
+      setListening(false);
+
+      if (!loading && !speaking) {
+        setReaction("idle");
+      }
     };
 
     recognition.onend = () => {
-      setIsListening(false);
-      setReaction("calm");
+      setListening(false);
+
+      if (!loading && !speaking) {
+        setReaction("idle");
+      }
     };
 
     recognitionRef.current = recognition;
@@ -317,118 +495,60 @@ export default function Companion() {
     try {
       recognition.start();
     } catch {
-      setIsListening(false);
-      setReaction("calm");
+      setListening(false);
+      setReaction("idle");
     }
   }
 
-  function handleImageChange(event) {
-    const file = event.target.files?.[0];
+  function addMemory(value) {
+    const cleanValue = String(value || "").trim();
 
-    if (!file) return;
-
-    if (!file.type.startsWith("image/")) {
-      alert("Please select an image file.");
+    if (!cleanValue) {
       return;
     }
 
-    if (file.size > 8 * 1024 * 1024) {
-      alert("Image is too large. Please choose an image below 8MB.");
-      return;
-    }
+    setMemory((current) => {
+      const next = [
+        ...current.filter(
+          (item) =>
+            String(item).toLowerCase() !== cleanValue.toLowerCase()
+        ),
+        cleanValue,
+      ];
 
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      setImage({
-        name: file.name,
-        type: file.type,
-        data: reader.result,
-      });
-
-      setTemporaryReaction("image", 1800);
-    };
-
-    reader.readAsDataURL(file);
-  }
-
-  function removeImage() {
-    setImage(null);
-
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
-
-    setReaction("calm");
-  }
-
-  function addMemoryFromConversation(userText, assistantText) {
-    const text = `${userText} ${assistantText}`.trim();
-
-    if (!text) return;
-
-    const memoryKeywords =
-      /my name|nama saya|nama aku|i like|i love|saya suka|aku suka|favorite|fav|kerja|work|business|projek|project|remember|ingat/i;
-
-    if (!memoryKeywords.test(userText)) return;
-
-    const newMemory = {
-      id: createId(),
-      text: userText.trim(),
-      createdAt: Date.now(),
-    };
-
-    setMemory((previous) => {
-      const exists = previous.some(
-        (item) =>
-          String(item.text || "").toLowerCase() ===
-          newMemory.text.toLowerCase()
-      );
-
-      if (exists) return previous;
-
-      return [...previous.slice(-49), newMemory];
+      return next.slice(-50);
     });
   }
 
   async function sendMessage() {
     const text = input.trim();
 
-    if ((!text && !image) || isLoading) return;
+    if ((!text && !attachment) || loading) {
+      return;
+    }
 
     const userMessage = {
       id: createId(),
       role: "user",
       content: text,
       createdAt: Date.now(),
-      ...(image
-        ? {
-            image: {
-              name: image.name,
-              type: image.type,
-              data: image.data,
-            },
-          }
-        : {}),
+      image: attachment?.data || null,
     };
 
     const nextMessages = [...messages, userMessage];
 
     setMessages(nextMessages);
     setInput("");
-    setImage(null);
+    setAttachment(null);
+    setLoading(true);
+    setReaction("thinking");
 
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
+    if (text) {
+      const detectedMood = detectMoodFromText(text);
 
-    setIsLoading(true);
-    setTemporaryReaction("thinking", 5000);
-
-    const localMood = getMoodFromText(text);
-
-    if (localMood !== "calm") {
-      updateMood(localMood);
+      if (detectedMood !== "calm") {
+        setMood(detectedMood);
+      }
     }
 
     try {
@@ -438,17 +558,13 @@ export default function Companion() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: nextMessages.map((item) => ({
-            role: item.role,
-            content: item.content,
-            ...(item.image
-              ? {
-                  image: item.image,
-                }
-              : {}),
+          messages: nextMessages.map((message) => ({
+            role: message.role,
+            content: message.content,
+            image: message.image || null,
           })),
-          memory,
           mood,
+          memory,
           settings,
         }),
       });
@@ -456,13 +572,14 @@ export default function Companion() {
       const data = await response.json();
 
       if (!response.ok || !data?.ok) {
-        throw new Error(data?.error || "Unable to get a response from Maya.");
+        throw new Error(
+          data?.error || "Maya could not respond right now."
+        );
       }
 
       const assistantText =
-        typeof data.text === "string" && data.text.trim()
-          ? data.text.trim()
-          : "Sorry, I couldn't generate a response right now.";
+        String(data.text || "").trim() ||
+        "Sorry, Maya tak dapat jawab sekarang. Cuba lagi.";
 
       const assistantMessage = {
         id: createId(),
@@ -471,22 +588,28 @@ export default function Companion() {
         createdAt: Date.now(),
       };
 
-      setMessages((previous) => [...previous, assistantMessage]);
+      setMessages((current) => [...current, assistantMessage]);
 
-      if (data.mood && moods[data.mood]) {
-        updateMood(data.mood);
+      if (data.mood) {
+        setMood(normalizeMood(data.mood));
       } else {
-        updateMood(getMoodFromText(assistantText));
+        setMood(detectMoodFromText(assistantText));
       }
 
-      setTemporaryReaction("happy", 2200);
+      if (Array.isArray(data.memory)) {
+        setMemory(data.memory.slice(-50));
+      }
 
-      addMemoryFromConversation(text, assistantText);
+      setReaction("reply");
 
-      if (settings.autoSpeak && settings.voiceEnabled) {
+      if (settings.autoSpeak) {
         window.setTimeout(() => {
-          speakText(assistantText);
+          speak(assistantText);
         }, 150);
+      } else {
+        window.setTimeout(() => {
+          setReaction("idle");
+        }, 1400);
       }
     } catch (error) {
       const errorMessage = {
@@ -494,19 +617,23 @@ export default function Companion() {
         role: "assistant",
         content:
           error?.message ||
-          "Something went wrong while connecting to Maya. Please try again.",
+          "Maya mengalami masalah untuk connect dengan AI.",
         createdAt: Date.now(),
-        isError: true,
+        error: true,
       };
 
-      setMessages((previous) => [...previous, errorMessage]);
-      setTemporaryReaction("upset", 2200);
-    } finally {
-      setIsLoading(false);
+      setMessages((current) => [...current, errorMessage]);
+      setReaction("upset");
 
       window.setTimeout(() => {
-        setReaction("calm");
-      }, 2400);
+        setReaction("idle");
+      }, 1800);
+    } finally {
+      setLoading(false);
+
+      window.setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
     }
   }
 
@@ -517,73 +644,90 @@ export default function Companion() {
     }
   }
 
-  function newChat() {
-    if (typeof window !== "undefined") {
-      const confirmed = window.confirm(
-        "Start a new chat? Your saved long-term memory will remain."
-      );
-
-      if (!confirmed) return;
+  function startNewChat() {
+    if (loading) {
+      return;
     }
 
-    setMessages([defaultMessage]);
-    setMood("calm");
-    setReaction("calm");
+    const confirmed = window.confirm(
+      "Start new chat? Conversation semasa akan dibersihkan."
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setMessages([
+      {
+        id: createId(),
+        role: "assistant",
+        content: "Okay, kita start fresh. 😊",
+        createdAt: Date.now(),
+      },
+    ]);
+
+    setMood("happy");
+    setReaction("happy");
     setInput("");
-    setImage(null);
+    setAttachment(null);
 
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
+    window.setTimeout(() => {
+      setReaction("idle");
+    }, 1400);
   }
 
   function clearEverything() {
-    if (typeof window !== "undefined") {
-      const confirmed = window.confirm(
-        "Clear chat history and Maya memory?"
-      );
+    const confirmed = window.confirm(
+      "Clear semua conversation, memory dan mood?"
+    );
 
-      if (!confirmed) return;
+    if (!confirmed) {
+      return;
     }
 
-    setMessages([defaultMessage]);
+    window.localStorage.removeItem(STORAGE.messages);
+    window.localStorage.removeItem(STORAGE.mood);
+    window.localStorage.removeItem(STORAGE.memory);
+
+    setMessages([
+      {
+        id: createId(),
+        role: "assistant",
+        content: "Semua dah clear. Hi again. 😊",
+        createdAt: Date.now(),
+      },
+    ]);
+
+    setMood("happy");
     setMemory([]);
-    setMood("calm");
-    setReaction("calm");
-    setInput("");
-    setImage(null);
+    setReaction("happy");
 
-    localStorage.removeItem(STORAGE.messages);
-    localStorage.removeItem(STORAGE.memory);
-    localStorage.removeItem(STORAGE.mood);
-
-    if (fileRef.current) {
-      fileRef.current.value = "";
-    }
+    window.setTimeout(() => {
+      setReaction("idle");
+    }, 1400);
   }
 
   function exportMemory() {
-    if (typeof window === "undefined") return;
-
     const payload = {
-      version: 3,
       exportedAt: new Date().toISOString(),
       memory,
-      messages,
       mood,
       settings,
     };
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: "application/json",
-    });
+    const blob = new Blob(
+      [JSON.stringify(payload, null, 2)],
+      {
+        type: "application/json",
+      }
+    );
 
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const anchor = document.createElement("a");
 
-    link.href = url;
-    link.download = "maya-memory-backup.json";
-    link.click();
+    anchor.href = url;
+    anchor.download = "maya-memory.json";
+    anchor.click();
 
     URL.revokeObjectURL(url);
   }
@@ -591,36 +735,35 @@ export default function Companion() {
   function importMemory(event) {
     const file = event.target.files?.[0];
 
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     const reader = new FileReader();
 
     reader.onload = () => {
       try {
-        const imported = JSON.parse(reader.result);
+        const payload = JSON.parse(reader.result);
 
-        if (Array.isArray(imported.memory)) {
-          setMemory(imported.memory);
+        if (Array.isArray(payload.memory)) {
+          setMemory(payload.memory.slice(-50));
         }
 
-        if (Array.isArray(imported.messages) && imported.messages.length) {
-          setMessages(imported.messages);
+        if (payload.mood) {
+          setMood(normalizeMood(payload.mood));
         }
 
-        if (imported.mood && moods[imported.mood]) {
-          setMood(imported.mood);
+        if (payload.settings) {
+          setSettings((current) => ({
+            ...current,
+            ...payload.settings,
+          }));
         }
 
-        if (imported.settings) {
-          setSettings({
-            ...defaultSettings,
-            ...imported.settings,
-          });
-        }
-
-        alert("Maya memory imported successfully.");
+        temporaryReaction("happy", 1600);
+        window.alert("Maya memory imported.");
       } catch {
-        alert("Invalid Maya backup file.");
+        window.alert("Invalid Maya memory file.");
       }
     };
 
@@ -628,39 +771,119 @@ export default function Companion() {
     event.target.value = "";
   }
 
-  function updateSetting(key, value) {
-    setSettings((previous) => ({
-      ...previous,
-      [key]: value,
-    }));
-  }
+  const activeMood = MOODS[mood] || MOODS.calm;
 
-  const reactionLabel = {
-    calm: "Here with you",
-    typing: "I'm watching...",
-    listening: "Listening...",
-    thinking: "Thinking...",
-    speaking: "Speaking...",
-    happy: "😊 Feeling good",
-    image: "Looking at your image...",
-    upset: "I'm here...",
-  };
+  const visualState = useMemo(() => {
+    if (speaking) {
+      return "speaking";
+    }
+
+    if (listening) {
+      return "listening";
+    }
+
+    if (loading) {
+      return "thinking";
+    }
+
+    if (reaction === "typing") {
+      return "typing";
+    }
+
+    if (reaction === "curious") {
+      return "curious";
+    }
+
+    if (reaction === "reply") {
+      return "reply";
+    }
+
+    if (reaction === "happy") {
+      return "happy";
+    }
+
+    if (reaction === "upset") {
+      return "upset";
+    }
+
+    if (reaction === "thinking") {
+      return "thinking";
+    }
+
+    if (reaction === "listening") {
+      return "listening";
+    }
+
+    if (reaction === "speaking") {
+      return "speaking";
+    }
+
+    return mood;
+  }, [mood, reaction, loading, listening, speaking]);
+
+  const reactionText = useMemo(() => {
+    if (speaking) {
+      return "Maya sedang bercakap...";
+    }
+
+    if (listening) {
+      return "Maya sedang dengar...";
+    }
+
+    if (loading) {
+      return "Maya sedang fikir...";
+    }
+
+    if (reaction === "typing") {
+      return "Maya perasan kau tengah menaip...";
+    }
+
+    if (reaction === "curious") {
+      return "Maya tengah tengok...";
+    }
+
+    if (reaction === "reply") {
+      return "Maya dah reply";
+    }
+
+    return `${activeMood.emoji} ${activeMood.label}`;
+  }, [
+    speaking,
+    listening,
+    loading,
+    reaction,
+    activeMood,
+  ]);
+
+  if (!hydrated) {
+    return (
+      <main className="companionApp">
+        <div className="companionShell loadingShell">
+          <div className="loadingScreen">
+            <div className="loadingOrb" />
+            <strong>Maya</strong>
+            <span>Loading AI companion...</span>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="companionApp">
-      <section className="companionShell">
+      <div className="companionShell">
         <header className="topBar">
-          <div className="brandArea">
-            <div className="brandAvatar">
-              <span>✦</span>
-            </div>
+          <div className="brandBlock">
+            <div className="brandAvatar">M</div>
 
             <div>
-              <div className="brandName">{settings.name}</div>
+              <div className="brandName">
+                {settings.name || "Maya"}
+              </div>
 
               <div className="brandStatus">
                 <span className="onlineDot" />
-                AI companion
+                AI Companion
               </div>
             </div>
           </div>
@@ -678,75 +901,90 @@ export default function Companion() {
 
             <button
               type="button"
-              className="iconButton"
-              onClick={newChat}
-              aria-label="New chat"
-              title="New chat"
+              className="newChatButton"
+              onClick={startNewChat}
+              disabled={loading}
             >
-              ＋
+              + New Chat
             </button>
           </div>
         </header>
 
-        <section className="liveAiCard">
-          <div className="mayaVisual">
-            <div className={`mayaFace mood-${mood} reaction-${reaction}`}>
-              <div className="mayaHair" />
-
-              <div className="mayaHead">
-                <div className="mayaForehead" />
-
-                <div className="mayaEyes">
-                  <span className="mayaEye left">
-                    <span className="mayaPupil" />
-                  </span>
-
-                  <span className="mayaEye right">
-                    <span className="mayaPupil" />
-                  </span>
-                </div>
-
-                <div className="mayaNose" />
-
-                <div
-                  className={`mayaMouth ${
-                    isSpeaking ? "mouthSpeaking" : ""
-                  }`}
-                />
-
-                <div className="mayaCheek left" />
-                <div className="mayaCheek right" />
+        <section
+          className={`liveAiCard mood-${mood} state-${visualState}`}
+        >
+          <div className="liveAiHeader">
+            <div>
+              <div className="liveAiTitle">
+                LIVE AI
+                <span className="liveBadge">LIVE</span>
               </div>
+
+              <div className="liveAiSubtitle">
+                {reactionText}
+              </div>
+            </div>
+
+            <div className="moodBadge">
+              <span>{activeMood.emoji}</span>
+              {activeMood.label}
             </div>
           </div>
 
-          <div className="liveAiInfo">
-            <div className="liveAiHeader">
-              <span className="liveBadge">
-                <span className="livePulse" />
-                LIVE AI
-              </span>
+          <div
+            className="mayaVisual"
+            aria-label={`Maya ${activeMood.label}`}
+          >
+            <div className="mayaGlow" />
 
-              <span className="moodBadge">
-                {currentMood.emoji} {currentMood.label}
-              </span>
+            <div className="mayaHairBack" />
+
+            <div className="mayaHead">
+              <div className="mayaHairTop" />
+
+              <div className="mayaEar mayaEarLeft" />
+              <div className="mayaEar mayaEarRight" />
+
+              <div className="mayaEyebrow mayaEyebrowLeft" />
+              <div className="mayaEyebrow mayaEyebrowRight" />
+
+              <div className="mayaEye mayaEyeLeft">
+                <div className="mayaIris">
+                  <div className="mayaPupil" />
+                  <div className="mayaEyeLight" />
+                </div>
+              </div>
+
+              <div className="mayaEye mayaEyeRight">
+                <div className="mayaIris">
+                  <div className="mayaPupil" />
+                  <div className="mayaEyeLight" />
+                </div>
+              </div>
+
+              <div className="mayaNose" />
+
+              <div className="mayaCheek mayaCheekLeft" />
+              <div className="mayaCheek mayaCheekRight" />
+
+              <div className="mayaMouth">
+                <span />
+              </div>
             </div>
 
-            <div className="liveAiName">{settings.name}</div>
+            <div className="mayaNeck" />
+            <div className="mayaShoulders" />
+          </div>
 
-            <div className="liveAiReaction">
-              {reactionLabel[reaction] || reactionLabel.calm}
-            </div>
-
-            <div className="liveAiBars" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
+          <div className="liveAiState">
+            <span className="stateDot" />
+            {visualState === "thinking"
+              ? "Thinking"
+              : visualState === "listening"
+                ? "Listening"
+                : visualState === "speaking"
+                  ? "Speaking"
+                  : "Ready"}
           </div>
         </section>
 
@@ -754,77 +992,127 @@ export default function Companion() {
           <section className="settingsPanel">
             <div className="settingsHeader">
               <div>
-                <h2>Maya Settings</h2>
-                <p>Control Maya's personality and voice.</p>
+                <h3>Maya Settings</h3>
+                <p>Personalise cara Maya interact dengan kau.</p>
               </div>
 
               <button
                 type="button"
-                className="closeButton"
+                className="closeSettings"
                 onClick={() => setShowSettings(false)}
               >
                 ×
               </button>
             </div>
 
-            <label className="settingsField">
-              <span>Name</span>
-              <input
-                value={settings.name}
-                onChange={(event) =>
-                  updateSetting("name", event.target.value)
-                }
-                maxLength={40}
-              />
-            </label>
+            <div className="settingsGrid">
+              <label className="settingsField">
+                <span>Maya name</span>
 
-            <label className="settingsField">
-              <span>Personality</span>
-              <textarea
-                value={settings.personality}
-                onChange={(event) =>
-                  updateSetting("personality", event.target.value)
-                }
-                rows={4}
-              />
-            </label>
+                <input
+                  type="text"
+                  value={settings.name}
+                  onChange={(event) =>
+                    updateSetting("name", event.target.value)
+                  }
+                />
+              </label>
 
-            <label className="settingsToggle">
-              <span>
-                <strong>Voice output</strong>
-                <small>Allow Maya to speak responses.</small>
-              </span>
+              <label className="settingsField">
+                <span>Language</span>
 
-              <input
-                type="checkbox"
-                checked={Boolean(settings.voiceEnabled)}
-                onChange={(event) =>
-                  updateSetting("voiceEnabled", event.target.checked)
-                }
-              />
-            </label>
+                <select
+                  value={settings.language}
+                  onChange={(event) =>
+                    updateSetting("language", event.target.value)
+                  }
+                >
+                  <option value="BM + Manglish">BM + Manglish</option>
+                  <option value="Bahasa Melayu">Bahasa Melayu</option>
+                  <option value="English">English</option>
+                </select>
+              </label>
 
-            <label className="settingsToggle">
-              <span>
-                <strong>Auto speak</strong>
-                <small>Automatically speak new AI replies.</small>
-              </span>
+              <label className="settingsField settingsWide">
+                <span>Personality</span>
 
-              <input
-                type="checkbox"
-                checked={Boolean(settings.autoSpeak)}
-                onChange={(event) =>
-                  updateSetting("autoSpeak", event.target.checked)
-                }
-              />
-            </label>
+                <textarea
+                  value={settings.personality}
+                  onChange={(event) =>
+                    updateSetting(
+                      "personality",
+                      event.target.value
+                    )
+                  }
+                  rows={3}
+                />
+              </label>
 
-            <div className="memoryTools">
-              <button type="button" onClick={exportMemory}>
+              <label className="settingsToggle">
+                <input
+                  type="checkbox"
+                  checked={settings.voiceEnabled}
+                  onChange={(event) =>
+                    updateSetting(
+                      "voiceEnabled",
+                      event.target.checked
+                    )
+                  }
+                />
+
+                <span>
+                  <strong>Voice output</strong>
+                  <small>Allow Maya to speak</small>
+                </span>
+              </label>
+
+              <label className="settingsToggle">
+                <input
+                  type="checkbox"
+                  checked={settings.autoSpeak}
+                  onChange={(event) =>
+                    updateSetting(
+                      "autoSpeak",
+                      event.target.checked
+                    )
+                  }
+                />
+
+                <span>
+                  <strong>Auto speak</strong>
+                  <small>Speak after every AI reply</small>
+                </span>
+              </label>
+
+              <label className="settingsField">
+                <span>Voice speed</span>
+
+                <input
+                  type="range"
+                  min="0.7"
+                  max="1.3"
+                  step="0.05"
+                  value={settings.voiceRate}
+                  onChange={(event) =>
+                    updateSetting(
+                      "voiceRate",
+                      Number(event.target.value)
+                    )
+                  }
+                />
+              </label>
+            </div>
+
+            <div className="settingsActions">
+              <button
+                type="button"
+                onClick={exportMemory}
+                className="secondaryButton"
+              >
                 Export Memory
               </button>
 
-              <label className="fileButton">
+              <label className="secondaryButton fileButton">
                 Import Memory
                 <input
                   type="file"
@@ -836,8 +1124,8 @@ export default function Companion() {
 
               <button
                 type="button"
-                className="dangerButton"
                 onClick={clearEverything}
+                className="dangerButton"
               >
                 Clear Everything
               </button>
@@ -845,80 +1133,89 @@ export default function Companion() {
           </section>
         )}
 
-        <section className="chatArea">
-          <div className="chatMessages">
-            {messages.map((message) => (
-              <div
-                key={message.id || `${message.role}-${message.createdAt}`}
-                className={`messageRow ${
-                  message.role === "user" ? "userRow" : "mayaRow"
-                }`}
-              >
-                {message.role !== "user" && (
-                  <div className="messageAvatar">✦</div>
-                )}
+        <section className="chatSection">
+          <div className="chatHeader">
+            <div>
+              <strong>Conversation</strong>
+              <span>{messages.length} messages</span>
+            </div>
+          </div>
 
+          <div className="chatScroll">
+            <div className="chatInner">
+              {messages.map((message) => (
                 <div
-                  className={`messageBubble ${
+                  key={message.id}
+                  className={`messageRow ${
                     message.role === "user"
-                      ? "userBubble"
-                      : "mayaBubble"
-                  } ${message.isError ? "errorBubble" : ""}`}
+                      ? "messageUser"
+                      : "messageMaya"
+                  }`}
                 >
-                  {message.image?.data && (
-                    <img
-                      src={message.image.data}
-                      alt="User attachment"
-                      className="messageImage"
-                    />
+                  {message.role !== "user" && (
+                    <div className="messageAvatar">M</div>
                   )}
 
-                  {message.content && (
-                    <div className="messageText">
-                      {message.content}
+                  <div className="messageContent">
+                    {message.image && (
+                      <img
+                        src={message.image}
+                        alt="User attachment"
+                        className="messageImage"
+                      />
+                    )}
+
+                    {message.content && (
+                      <div
+                        className={`messageBubble ${
+                          message.error ? "messageError" : ""
+                        }`}
+                      >
+                        {message.content}
+                      </div>
+                    )}
+
+                    <div className="messageMeta">
+                      {formatTime(message.createdAt)}
                     </div>
-                  )}
-
-                  <div className="messageTime">
-                    {new Date(
-                      message.createdAt || Date.now()
-                    ).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
 
-            {isLoading && (
-              <div className="messageRow mayaRow">
-                <div className="messageAvatar">✦</div>
+              {loading && (
+                <div className="messageRow messageMaya">
+                  <div className="messageAvatar">M</div>
 
-                <div className="messageBubble mayaBubble typingBubble">
-                  <span className="typingDot" />
-                  <span className="typingDot" />
-                  <span className="typingDot" />
+                  <div className="messageContent">
+                    <div className="typingBubble">
+                      <span />
+                      <span />
+                      <span />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            <div ref={messagesEndRef} />
+              <div ref={messagesEndRef} />
+            </div>
           </div>
         </section>
 
-        {image && (
+        {attachment && (
           <div className="attachmentPreview">
-            <img src={image.data} alt="Selected attachment" />
+            <img
+              src={attachment.data}
+              alt={attachment.name}
+            />
 
             <div className="attachmentInfo">
-              <strong>{image.name}</strong>
+              <strong>{attachment.name}</strong>
               <span>Image ready</span>
             </div>
 
             <button
               type="button"
-              onClick={removeImage}
+              onClick={removeAttachment}
               aria-label="Remove image"
             >
               ×
@@ -926,87 +1223,68 @@ export default function Companion() {
           </div>
         )}
 
-        <footer className="composerArea">
-          <div className="composer">
+        <section className="composer">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImage}
+            hidden
+          />
+
+          <button
+            type="button"
+            className="composerButton"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={loading}
+            title="Attach image"
+          >
+            ＋
+          </button>
+
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={handleTyping}
+            onKeyDown={handleKeyDown}
+            placeholder="Message Maya..."
+            rows={1}
+            disabled={loading}
+          />
+
+          <button
+            type="button"
+            className={`composerButton ${
+              listening ? "activeComposerButton" : ""
+            }`}
+            onClick={toggleListening}
+            disabled={loading}
+            title="Voice input"
+          >
+            🎤
+          </button>
+
+          {speaking && (
             <button
               type="button"
               className="composerButton"
-              onClick={() => fileRef.current?.click()}
-              disabled={isLoading}
-              aria-label="Attach image"
-              title="Attach image"
+              onClick={stopSpeaking}
+              title="Stop Maya voice"
             >
-              ＋
+              ■
             </button>
+          )}
 
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              hidden
-            />
-
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={(event) => handleTyping(event.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={`Message ${settings.name}...`}
-              rows={1}
-              disabled={isLoading}
-            />
-
-            <button
-              type="button"
-              className={`composerButton voiceButton ${
-                isListening ? "active" : ""
-              }`}
-              onClick={toggleVoiceInput}
-              disabled={isLoading}
-              aria-label="Voice input"
-              title="Voice input"
-            >
-              {isListening ? "🔴" : "🎤"}
-            </button>
-
-            {isSpeaking && (
-              <button
-                type="button"
-                className="composerButton"
-                onClick={stopSpeaking}
-                aria-label="Stop speaking"
-                title="Stop speaking"
-              >
-                🔇
-              </button>
-            )}
-
-            <button
-              type="button"
-              className="sendButton"
-              onClick={sendMessage}
-              disabled={isLoading || (!input.trim() && !image)}
-              aria-label="Send message"
-              title="Send message"
-            >
-              ↑
-            </button>
-          </div>
-
-          <div className="composerHint">
-            <span>
-              {isLoading
-                ? `${settings.name} is thinking...`
-                : "Enter to send · Shift + Enter for new line"}
-            </span>
-
-            <span>
-              {memory.length} memory {memory.length === 1 ? "item" : "items"}
-            </span>
-          </div>
-        </footer>
-      </section>
+          <button
+            type="button"
+            className="sendButton"
+            onClick={sendMessage}
+            disabled={loading || (!input.trim() && !attachment)}
+          >
+            {loading ? "..." : "➤"}
+          </button>
+        </section>
+      </div>
     </main>
   );
 }
