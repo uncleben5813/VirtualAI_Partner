@@ -1,36 +1,19 @@
-/* =========================================================
-   MAYA AI COMPANION — GLOBAL UI
-   ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  --bg: #09080f;
-  --panel: #11101a;
-  --panel-2: #171521;
-  --panel-3: #1d1a29;
-
-  --text: #f7f4fb;
-  --muted: #a9a3b5;
-  --muted-2: #777183;
-
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-
-  --accent: #a875ff;
-  --accent-2: #d4b8ff;
-
-  --danger: #ff6f91;
-
-  --user-bubble: #7c4dca;
-  --maya-bubble: #191723;
-
-  --radius: 20px;
-
-  --topbar-height: 66px;
+  --bg: #070b14;
+  --panel: #0d1320;
+  --panel-2: #111827;
+  --border: #202b3d;
+  --text: #f4f7fb;
+  --muted: #8c98aa;
+  --accent: #7c5cff;
+  --accent-2: #5d43d6;
+  --user: #26365a;
+  --maya: #151e2d;
+  --danger: #ef5350;
+  --success: #42d392;
 }
-
-/* =========================================================
-   RESET
-   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -41,29 +24,13 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  min-height: 100%;
-  background: var(--bg);
-  color: var(--text);
-}
-
-html {
-  overflow: hidden;
+  height: 100%;
 }
 
 body {
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  overflow: hidden;
-
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, Arial, sans-serif;
 }
 
 button,
@@ -74,876 +41,311 @@ select {
 }
 
 button {
-  color: inherit;
+  cursor: pointer;
 }
 
-img {
-  max-width: 100%;
-}
-
-/* =========================================================
-   APP SHELL
-   ========================================================= */
-
-.mayaApp {
-  position: relative;
-
+.app {
   width: 100%;
-  height: 100dvh;
-
-  display: flex;
-  flex-direction: column;
-
-  overflow: hidden;
-
+  min-height: 100vh;
   background:
-    radial-gradient(
-      circle at 50% -20%,
-      rgba(168, 117, 255, 0.13),
-      transparent 42%
-    ),
+    radial-gradient(circle at 50% -20%, rgba(124, 92, 255, 0.12), transparent 35%),
     var(--bg);
 }
 
-/* =========================================================
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.mayaApp {
+  width: 100%;
+  max-width: 1100px;
+  height: 100vh;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* =========================
    TOP BAR
-   ========================================================= */
+========================= */
 
 .mayaTopbar {
-  position: relative;
-  z-index: 30;
-
-  flex: 0 0 var(--topbar-height);
-
-  height: var(--topbar-height);
-
+  flex: 0 0 auto;
+  height: 64px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding: 0 20px;
-
-  background:
-    rgba(9, 8, 15, 0.88);
-
-  border-bottom:
-    1px solid var(--border);
-
-  backdrop-filter:
-    blur(22px);
-
-  -webkit-backdrop-filter:
-    blur(22px);
+  border-bottom: 1px solid var(--border);
+  background: rgba(7, 11, 20, 0.92);
+  backdrop-filter: blur(12px);
 }
 
 .mayaBrand {
   display: flex;
   align-items: center;
   gap: 11px;
-
-  min-width: 0;
 }
 
-.mayaBrandIcon {
-  width: 38px;
-  height: 38px;
-
-  flex: 0 0 38px;
-
+.mayaLogo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
   display: grid;
   place-items: center;
-
-  border-radius: 13px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #b98bff,
-      #7141b9
-    );
-
-  color: white;
-
-  font-weight: 800;
-  font-size: 16px;
-
-  box-shadow:
-    0 8px 28px
-      rgba(137, 80, 220, 0.28);
+  background: linear-gradient(135deg, #8b72ff, #5d43d6);
+  font-size: 18px;
 }
 
-.mayaBrandName {
-  font-size: 15px;
-  font-weight: 700;
-
-  line-height: 1.15;
-}
-
-.mayaBrandStatus {
+.mayaBrandText {
   display: flex;
-  align-items: center;
-  gap: 6px;
-
-  margin-top: 3px;
-
-  color: var(--muted);
-
-  font-size: 11px;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.onlineDot {
-  width: 6px;
-  height: 6px;
+.mayaBrandTitle {
+  font-size: 14px;
+  font-weight: 700;
+}
 
-  border-radius: 50%;
-
-  background: #73e6a1;
-
-  box-shadow:
-    0 0 10px
-      rgba(115, 230, 161, 0.7);
+.mayaBrandSub {
+  color: var(--muted);
+  font-size: 11px;
 }
 
 .mayaTopActions {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 
-.topActionButton {
+.iconButton {
   width: 38px;
   height: 38px;
-
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
   display: grid;
   place-items: center;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 12px;
-
-  background:
-    rgba(255, 255, 255, 0.045);
-
-  color: var(--muted);
-
-  cursor: pointer;
-
-  transition:
-    background 0.18s ease,
-    border-color 0.18s ease,
-    transform 0.18s ease;
 }
 
-.topActionButton:hover {
-  background:
-    rgba(255, 255, 255, 0.08);
-
-  border-color:
-    var(--border-strong);
-
-  color: var(--text);
-
-  transform: translateY(-1px);
+.iconButton:hover {
+  background: var(--panel-2);
 }
 
-.topActionButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+/* =========================
+   LIVE AI
+========================= */
 
-/* =========================================================
-   LIVE AI SECTION
-   ========================================================= */
-
-.mayaLiveSection {
-  position: relative;
-  z-index: 20;
-
+.mayaLive {
   flex: 0 0 auto;
-
-  width: 100%;
-
-  padding:
-    14px 20px 13px;
-
+  border-bottom: 1px solid var(--border);
   background:
-    linear-gradient(
-      180deg,
-      rgba(20, 18, 30, 0.98),
-      rgba(15, 14, 23, 0.97)
-    );
-
-  border-bottom:
-    1px solid var(--border);
-
-  box-shadow:
-    0 10px 35px
-      rgba(0, 0, 0, 0.24);
+    radial-gradient(circle at center, rgba(124, 92, 255, 0.08), transparent 55%),
+    var(--panel);
 }
 
-.liveHeader {
+.mayaLiveHeader {
+  height: 38px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  gap: 12px;
-
-  margin-bottom: 8px;
 }
 
-.liveTitle {
+.mayaLiveTitle {
   display: flex;
   align-items: center;
   gap: 7px;
-
-  font-size: 11px;
-  font-weight: 800;
-
-  letter-spacing: 0.12em;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .liveDot {
-  width: 7px;
-  height: 7px;
-
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
-
-  background: #ff5e83;
-
-  box-shadow:
-    0 0 12px
-      rgba(255, 94, 131, 0.85);
-
-  animation:
-    livePulse 1.7s
-    ease-in-out
-    infinite;
+  background: var(--success);
+  box-shadow: 0 0 12px rgba(66, 211, 146, 0.7);
 }
 
-@keyframes livePulse {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: scale(0.9);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-}
-
-.liveSubtitle {
-  margin-top: 3px;
-
+.mayaLiveStatus {
   color: var(--muted);
-
-  font-size: 10px;
+  font-size: 11px;
 }
-
-.liveStatus {
-  padding:
-    5px 9px;
-
-  border:
-    1px solid
-    rgba(115, 230, 161, 0.15);
-
-  border-radius: 999px;
-
-  background:
-    rgba(115, 230, 161, 0.07);
-
-  color: #86e9aa;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  white-space: nowrap;
-}
-
-.liveStatus.statusThinking {
-  color: #d5b6ff;
-
-  border-color:
-    rgba(168, 117, 255, 0.18);
-
-  background:
-    rgba(168, 117, 255, 0.08);
-}
-
-.liveStatus.statusSpeaking {
-  color: #ffafd0;
-
-  border-color:
-    rgba(255, 111, 145, 0.18);
-
-  background:
-    rgba(255, 111, 145, 0.08);
-}
-
-.liveStatus.statusListening {
-  color: #8fdcff;
-
-  border-color:
-    rgba(91, 196, 255, 0.18);
-
-  background:
-    rgba(91, 196, 255, 0.08);
-}
-
-/* =========================================================
-   MAYA LIVE CONTENT
-   ========================================================= */
 
 .mayaLiveContent {
+  min-height: 180px;
   display: flex;
   align-items: center;
-
-  gap: 15px;
-
-  min-height: 180px;
+  justify-content: center;
+  padding: 8px 20px 14px;
 }
 
-/* =========================================================
-   REALISTIC MAYA AVATAR
-   ========================================================= */
+/* =========================
+   MAYA AVATAR
+   ONLY THIS AREA ENLARGED
+========================= */
+
+.mayaAvatarArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
 
 .mayaAvatarWrap {
   position: relative;
-
   width: 170px;
   height: 170px;
-
   flex: 0 0 170px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 12px 35px rgba(0, 0, 0, 0.45),
+    0 0 0 5px rgba(124, 92, 255, 0.05);
+}
 
-  display: grid;
-  place-items: center;
+.mayaAvatarImage {
+  width: 158px;
+  height: 158px;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+  transition:
+    opacity 0.18s ease,
+    transform 0.22s ease,
+    filter 0.22s ease;
+}
+
+.mayaAvatarWrap.speaking .mayaAvatarImage {
+  animation: mayaTalk 0.55s ease-in-out infinite alternate;
+}
+
+.mayaAvatarWrap.listening .mayaAvatarImage {
+  animation: mayaListen 1.1s ease-in-out infinite;
+}
+
+.mayaAvatarWrap.reacting .mayaAvatarImage {
+  animation: mayaReact 0.5s ease-out;
+}
+
+@keyframes mayaTalk {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1.018);
+  }
+}
+
+@keyframes mayaListen {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.025);
+  }
+}
+
+@keyframes mayaReact {
+  0% {
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+
+  70% {
+    transform: translate(-50%, -50%) scale(1.025);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
 }
 
 .mayaAvatarGlow {
   position: absolute;
-
-  inset: 7px;
-
+  inset: 0;
   border-radius: 50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(168, 117, 255, 0.2),
-      transparent 68%
-    );
-
-  filter: blur(8px);
-
-  opacity: 0.8;
-
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+  pointer-events: none;
+  box-shadow: inset 0 0 30px rgba(124, 92, 255, 0.08);
 }
 
-.mayaAvatarImage {
-  position: relative;
-  z-index: 2;
-
-  width: 158px;
-  height: 158px;
-
-  display: block;
-
-  object-fit: cover;
-
-  object-position: center top;
-
-  border-radius: 50%;
-
-  border:
-    2px solid
-    rgba(255, 255, 255, 0.12);
-
-  background: #16131e;
-
-  box-shadow:
-    0 10px 35px
-      rgba(0, 0, 0, 0.38);
-
-  user-select: none;
-  -webkit-user-drag: none;
-
-  transition:
-    opacity 0.18s ease,
-    transform 0.35s ease,
-    filter 0.35s ease;
-}
-
-/* subtle idle breathing */
-
-.mayaAvatarWrap:not(
-    .mayaAvatarSpeaking
-  ):not(
-    .mayaAvatarThinking
-  ) {
-  animation:
-    mayaBreathing 4.8s
-    ease-in-out
-    infinite;
-}
-
-@keyframes mayaBreathing {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
-/* reaction */
-
-.mayaAvatarReacting
-  .mayaAvatarImage {
-  transform:
-    scale(1.025)
-    translateY(-2px);
-}
-
-.mayaAvatarReacting
-  .mayaAvatarGlow {
-  opacity: 1;
-
-  transform: scale(1.08);
-}
-
-/* talking */
-
-.mayaAvatarSpeaking
-  .mayaAvatarImage {
-  animation:
-    mayaTalking 0.55s
-    ease-in-out
-    infinite;
-}
-
-@keyframes mayaTalking {
-  0%,
-  100% {
-    transform:
-      translateY(0)
-      scale(1);
-  }
-
-  50% {
-    transform:
-      translateY(-1px)
-      scale(1.018);
-  }
-}
-
-/* thinking */
-
-.mayaAvatarThinking
-  .mayaAvatarImage {
-  animation:
-    mayaThinking 1.4s
-    ease-in-out
-    infinite;
-
-  filter:
-    saturate(0.88)
-    brightness(0.94);
-}
-
-@keyframes mayaThinking {
-  0%,
-  100% {
-    transform:
-      rotate(0deg)
-      scale(1);
-  }
-
-  50% {
-    transform:
-      rotate(-1deg)
-      scale(1.012);
-  }
-}
-
-/* listening */
-
-.mayaAvatarListening
-  .mayaAvatarImage {
-  animation:
-    mayaListening 1.25s
-    ease-in-out
-    infinite;
-
-  border-color:
-    rgba(91, 196, 255, 0.35);
-
-  box-shadow:
-    0 10px 35px
-      rgba(45, 166, 225, 0.22);
-}
-
-@keyframes mayaListening {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.02);
-  }
-}
-
-/* status under avatar */
-
-.mayaAvatarStatus {
+.mayaMoodBadge {
   position: absolute;
-
-  z-index: 4;
-
-  left: 50%;
-  bottom: -2px;
-
-  transform:
-    translateX(-50%);
-
-  min-width: 72px;
-
-  padding:
-    4px 8px;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.1);
-
-  border-radius: 999px;
-
-  background:
-    rgba(12, 10, 18, 0.88);
-
-  color: var(--muted);
-
-  font-size: 8px;
-
-  text-align: center;
-
-  backdrop-filter:
-    blur(10px);
-
-  -webkit-backdrop-filter:
-    blur(10px);
-}
-
-/* =========================================================
-   LIVE INFO
-   ========================================================= */
-
-.mayaLiveInfo {
-  min-width: 0;
-
-  padding-right: 8px;
-}
-
-.mayaLiveName {
-  font-size: 22px;
-  font-weight: 800;
-
-  line-height: 1.15;
-
-  letter-spacing: -0.02em;
-}
-
-.mayaLiveMood {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-
-  margin-top: 7px;
-
-  padding:
-    5px 9px;
-
-  border-radius: 999px;
-
-  background:
-    rgba(168, 117, 255, 0.1);
-
-  border:
-    1px solid
-    rgba(168, 117, 255, 0.14);
-
-  color: var(--accent-2);
-
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.mayaLiveHint {
-  margin-top: 8px;
-
-  color: var(--muted);
-
-  font-size: 11px;
-
-  line-height: 1.45;
-}
-
-/* =========================================================
-   MOOD BUTTONS
-   ========================================================= */
-
-.moodRow {
+  right: 2px;
+  bottom: 7px;
+  min-width: 31px;
+  height: 31px;
+  padding: 0 8px;
+  border-radius: 16px;
   display: flex;
-
-  gap: 6px;
-
-  width: 100%;
-
-  overflow-x: auto;
-
-  scrollbar-width: none;
-
-  padding-top: 4px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(13, 19, 32, 0.95);
+  border: 1px solid var(--border);
+  font-size: 15px;
 }
 
-.moodRow::-webkit-scrollbar {
-  display: none;
+/* =========================
+   MOOD BAR
+========================= */
+
+.mayaMoodBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 0 15px 12px;
+  overflow-x: auto;
 }
 
 .moodButton {
   flex: 0 0 auto;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-
-  padding:
-    6px 9px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 999px;
-
-  background:
-    rgba(255, 255, 255, 0.035);
-
+  min-width: 38px;
+  height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel-2);
   color: var(--muted);
-
-  font-size: 9px;
-  font-weight: 600;
-
-  cursor: pointer;
-
-  transition:
-    all 0.18s ease;
 }
 
 .moodButton:hover {
-  background:
-    rgba(255, 255, 255, 0.075);
-
   color: var(--text);
 }
 
 .moodButton.active {
-  background:
-    rgba(168, 117, 255, 0.13);
-
-  border-color:
-    rgba(168, 117, 255, 0.28);
-
-  color: var(--accent-2);
+  color: white;
+  border-color: rgba(124, 92, 255, 0.65);
+  background: rgba(124, 92, 255, 0.16);
 }
 
-/* =========================================================
-   SETTINGS
-   ========================================================= */
-
-.settingsPanel {
-  position: relative;
-  z-index: 25;
-
-  flex: 0 0 auto;
-
-  max-height: 46vh;
-
-  overflow-y: auto;
-
-  padding:
-    15px 20px;
-
-  background:
-    rgba(18, 16, 27, 0.98);
-
-  border-bottom:
-    1px solid var(--border);
-
-  box-shadow:
-    0 10px 30px
-      rgba(0, 0, 0, 0.25);
-}
-
-.settingsTitle {
-  margin-bottom: 12px;
-
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.settingsField {
-  display: flex;
-  flex-direction: column;
-
-  gap: 6px;
-
-  margin-bottom: 11px;
-}
-
-.settingsField > span {
-  color: var(--muted);
-
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.settingsField input,
-.settingsField textarea,
-.settingsField select {
-  width: 100%;
-
-  padding:
-    9px 10px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 10px;
-
-  outline: none;
-
-  background:
-    rgba(255, 255, 255, 0.045);
-
-  color: var(--text);
-
-  font-size: 11px;
-
-  resize: vertical;
-}
-
-.settingsField input:focus,
-.settingsField textarea:focus,
-.settingsField select:focus {
-  border-color:
-    rgba(168, 117, 255, 0.45);
-
-  box-shadow:
-    0 0 0 3px
-      rgba(168, 117, 255, 0.08);
-}
-
-.settingsCheck {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  margin:
-    10px 0 14px;
-
-  color: var(--muted);
-
-  font-size: 11px;
-}
-
-.settingsCheck input {
-  accent-color: var(--accent);
-}
-
-.settingsActions {
-  display: flex;
-  flex-wrap: wrap;
-
-  gap: 7px;
-}
-
-.settingsActions button,
-.fileButton {
-  padding:
-    8px 10px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 9px;
-
-  background:
-    rgba(255, 255, 255, 0.045);
-
-  color: var(--muted);
-
-  font-size: 10px;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.settingsActions button:hover,
-.fileButton:hover {
-  color: var(--text);
-
-  background:
-    rgba(255, 255, 255, 0.08);
-}
-
-.settingsActions .dangerButton {
-  color: #ff9ab2;
-
-  border-color:
-    rgba(255, 111, 145, 0.16);
-
-  background:
-    rgba(255, 111, 145, 0.06);
-}
-
-/* =========================================================
+/* =========================
    CHAT
-   ========================================================= */
+========================= */
 
 .mayaChat {
-  position: relative;
-
   flex: 1 1 auto;
-
   min-height: 0;
-
-  width: 100%;
-
   overflow-y: auto;
-  overflow-x: hidden;
-
-  padding:
-    18px 20px 20px;
-
-  overscroll-behavior: contain;
-
+  padding: 18px 20px 24px;
   scroll-behavior: smooth;
-
-  scrollbar-width: thin;
-  scrollbar-color:
-    rgba(255, 255, 255, 0.12)
-    transparent;
 }
 
 .mayaChat::-webkit-scrollbar {
-  width: 6px;
+  width: 7px;
 }
 
 .mayaChat::-webkit-scrollbar-track {
@@ -951,648 +353,329 @@ img {
 }
 
 .mayaChat::-webkit-scrollbar-thumb {
-  border-radius: 999px;
+  background: #263044;
+  border-radius: 20px;
+}
 
-  background:
-    rgba(255, 255, 255, 0.1);
+.chatEmpty {
+  height: 100%;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .messageRow {
-  width: 100%;
-
   display: flex;
-
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
-.userRow {
+.messageRow.user {
   justify-content: flex-end;
 }
 
-.mayaRow {
+.messageRow.maya {
   justify-content: flex-start;
-
-  align-items: flex-end;
-
-  gap: 8px;
-}
-
-.messageAvatar {
-  width: 27px;
-  height: 27px;
-
-  flex: 0 0 27px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 10px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #b98bff,
-      #7141b9
-    );
-
-  color: white;
-
-  font-size: 10px;
-  font-weight: 800;
 }
 
 .messageBubble {
-  max-width: min(
-    78%,
-    620px
-  );
-
-  padding:
-    10px 12px;
-
-  border-radius: 16px;
-
-  word-break: break-word;
-
-  animation:
-    messageAppear
-    0.22s
-    ease-out;
-}
-
-@keyframes messageAppear {
-  from {
-    opacity: 0;
-
-    transform:
-      translateY(5px);
-  }
-
-  to {
-    opacity: 1;
-
-    transform:
-      translateY(0);
-  }
-}
-
-.userBubble {
-  background:
-    linear-gradient(
-      145deg,
-      #8253cf,
-      #6f43b2
-    );
-
-  border-bottom-right-radius: 5px;
-
-  color: white;
-}
-
-.mayaBubble {
-  background:
-    var(--maya-bubble);
-
-  border:
-    1px solid var(--border);
-
-  border-bottom-left-radius: 5px;
-
-  color: var(--text);
-}
-
-.errorBubble {
-  border-color:
-    rgba(255, 111, 145, 0.22);
-
-  background:
-    rgba(255, 111, 145, 0.08);
-}
-
-.messageText {
-  font-size: 12px;
-
+  max-width: min(78%, 700px);
+  padding: 11px 14px;
+  border-radius: 15px;
   line-height: 1.55;
-
+  font-size: 13px;
   white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
-.messageTime {
+.messageRow.user .messageBubble {
+  background: var(--user);
+  border-bottom-right-radius: 5px;
+}
+
+.messageRow.maya .messageBubble {
+  background: var(--maya);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 5px;
+}
+
+.messageMeta {
   margin-top: 5px;
-
-  opacity: 0.45;
-
-  font-size: 8px;
-
-  text-align: right;
+  color: var(--muted);
+  font-size: 10px;
 }
 
 .messageImage {
+  max-width: 100%;
+  max-height: 300px;
   display: block;
-
-  width: min(
-    260px,
-    100%
-  );
-
-  max-height: 280px;
-
-  object-fit: cover;
-
   margin-bottom: 8px;
-
-  border-radius: 11px;
-
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
 }
 
-/* =========================================================
-   EMPTY CHAT
-   ========================================================= */
+/* =========================
+   COMPOSER
+========================= */
 
-.emptyChat {
-  min-height: 180px;
+.mayaComposerWrap {
+  flex: 0 0 auto;
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+  background: rgba(7, 11, 20, 0.95);
+}
 
+.mayaComposer {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-
-  padding:
-    30px 20px;
+  align-items: flex-end;
+  gap: 8px;
 }
 
-.emptyAvatar {
-  width: 52px;
-  height: 52px;
+.mayaInputWrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: var(--panel);
+  overflow: hidden;
+}
 
+.mayaInput {
+  width: 100%;
+  min-height: 44px;
+  max-height: 130px;
+  padding: 12px 13px;
+  border: 0;
+  outline: none;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+}
+
+.mayaInput::placeholder {
+  color: #69758a;
+}
+
+.composerButton {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
   display: grid;
   place-items: center;
-
-  margin-bottom: 12px;
-
-  border-radius: 18px;
-
-  background:
-    linear-gradient(
-      145deg,
-      #b98bff,
-      #7141b9
-    );
-
-  box-shadow:
-    0 12px 30px
-      rgba(137, 80, 220, 0.24);
-
-  font-size: 19px;
-  font-weight: 800;
 }
 
-.emptyChat h2 {
-  margin:
-    0 0 7px;
-
-  font-size: 17px;
-
-  letter-spacing: -0.02em;
+.composerButton:hover {
+  background: var(--panel-2);
 }
 
-.emptyChat p {
-  max-width: 380px;
-
-  margin: 0;
-
-  color: var(--muted);
-
-  font-size: 11px;
-
-  line-height: 1.55;
+.composerButton.primary {
+  border-color: transparent;
+  background: var(--accent);
 }
 
-/* =========================================================
-   TYPING
-   ========================================================= */
+.composerButton.primary:hover {
+  background: var(--accent-2);
+}
 
-.typingBubble {
+.composerButton.recording {
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
+/* =========================
+   ATTACHMENT
+========================= */
+
+.attachmentPreview {
   display: flex;
   align-items: center;
-
-  gap: 4px;
-
-  min-width: 46px;
-
-  padding:
-    12px 13px;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 11px;
 }
 
-.typingBubble span {
+.attachmentPreview img {
+  width: 42px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 7px;
+}
+
+.removeAttachment {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+}
+
+/* =========================
+   SETTINGS
+========================= */
+
+.settingsPanel {
+  position: absolute;
+  right: 20px;
+  top: 55px;
+  z-index: 50;
+  width: min(330px, calc(100vw - 40px));
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: #0d1320;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.settingsTitle {
+  margin-bottom: 13px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.settingGroup {
+  margin-bottom: 13px;
+}
+
+.settingLabel {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.settingInput,
+.settingSelect {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.settingTextarea {
+  width: 100%;
+  min-height: 70px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  outline: none;
+  resize: vertical;
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.settingCheck {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 12px;
+}
+
+/* =========================
+   NOTICE / ERROR
+========================= */
+
+.mayaNotice {
+  margin: 0 20px 10px;
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.mayaNotice.error {
+  border-color: rgba(239, 83, 80, 0.4);
+  color: #ffaaa8;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.typingIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 2px;
+}
+
+.typingIndicator span {
   width: 5px;
   height: 5px;
-
   border-radius: 50%;
-
-  background:
-    rgba(255, 255, 255, 0.55);
-
-  animation:
-    typingDot 1.15s
-    infinite ease-in-out;
+  background: var(--muted);
+  animation: typingDot 1.1s infinite ease-in-out;
 }
 
-.typingBubble span:nth-child(2) {
-  animation-delay: 0.14s;
+.typingIndicator span:nth-child(2) {
+  animation-delay: 0.15s;
 }
 
-.typingBubble span:nth-child(3) {
-  animation-delay: 0.28s;
+.typingIndicator span:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 @keyframes typingDot {
   0%,
-  60%,
+  70%,
   100% {
-    opacity: 0.3;
-
-    transform:
-      translateY(0);
+    opacity: 0.35;
+    transform: translateY(0);
   }
 
-  30% {
+  35% {
     opacity: 1;
-
-    transform:
-      translateY(-3px);
+    transform: translateY(-3px);
   }
 }
 
-/* =========================================================
-   ATTACHMENT
-   ========================================================= */
-
-.attachmentBar {
-  position: relative;
-  z-index: 20;
-
-  flex: 0 0 auto;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 10px;
-
-  margin:
-    0 20px 7px;
-
-  padding:
-    7px 9px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 12px;
-
-  background:
-    rgba(24, 21, 34, 0.96);
-}
-
-.attachmentInfo {
-  min-width: 0;
-
-  display: flex;
-  align-items: center;
-
-  gap: 8px;
-}
-
-.attachmentInfo img {
-  width: 38px;
-  height: 38px;
-
-  flex: 0 0 38px;
-
-  object-fit: cover;
-
-  border-radius: 8px;
-}
-
-.attachmentInfo strong,
-.attachmentInfo small {
-  display: block;
-
-  overflow: hidden;
-
-  text-overflow: ellipsis;
-
-  white-space: nowrap;
-}
-
-.attachmentInfo strong {
-  max-width: 220px;
-
-  font-size: 10px;
-}
-
-.attachmentInfo small {
-  margin-top: 2px;
-
-  color: var(--muted);
-
-  font-size: 8px;
-}
-
-.attachmentBar > button {
-  width: 26px;
-  height: 26px;
-
-  display: grid;
-  place-items: center;
-
-  border: 0;
-
-  border-radius: 8px;
-
-  background:
-    rgba(255, 255, 255, 0.06);
-
-  color: var(--muted);
-
-  cursor: pointer;
-}
-
-/* =========================================================
-   NOTICE
-   ========================================================= */
-
-.mayaNotice {
-  flex: 0 0 auto;
-
-  padding:
-    5px 20px 6px;
-
-  color:
-    rgba(169, 163, 181, 0.58);
-
-  font-size: 8px;
-
-  line-height: 1.4;
-
-  text-align: center;
-}
-
-/* =========================================================
-   COMPOSER
-   ========================================================= */
-
-.mayaComposer {
-  position: relative;
-  z-index: 30;
-
-  flex: 0 0 auto;
-
-  width: 100%;
-
-  display: flex;
-  align-items: flex-end;
-
-  gap: 6px;
-
-  padding:
-    9px 20px
-    calc(
-      9px +
-      env(
-        safe-area-inset-bottom
-      )
-    );
-
-  background:
-    rgba(9, 8, 15, 0.94);
-
-  border-top:
-    1px solid var(--border);
-
-  backdrop-filter:
-    blur(20px);
-
-  -webkit-backdrop-filter:
-    blur(20px);
-}
-
-.mayaComposer textarea {
-  flex: 1 1 auto;
-
-  min-width: 0;
-
-  min-height: 38px;
-  max-height: 110px;
-
-  resize: none;
-
-  padding:
-    10px 11px;
-
-  border:
-    1px solid var(--border);
-
-  border-radius: 12px;
-
-  outline: none;
-
-  background:
-    rgba(255, 255, 255, 0.045);
-
-  color: var(--text);
-
-  font-size: 11px;
-
-  line-height: 1.4;
-
-  overflow-y: auto;
-}
-
-.mayaComposer textarea::placeholder {
-  color:
-    rgba(169, 163, 181, 0.55);
-}
-
-.mayaComposer textarea:focus {
-  border-color:
-    rgba(168, 117, 255, 0.4);
-
-  box-shadow:
-    0 0 0 3px
-      rgba(168, 117, 255, 0.07);
-}
-
-.composerButton,
-.sendButton {
-  width: 38px;
-  height: 38px;
-
-  flex: 0 0 38px;
-
-  display: grid;
-  place-items: center;
-
-  border-radius: 11px;
-
-  cursor: pointer;
-
-  transition:
-    all 0.18s ease;
-}
-
-.composerButton {
-  border:
-    1px solid var(--border);
-
-  background:
-    rgba(255, 255, 255, 0.045);
-
-  color: var(--muted);
-
-  font-size: 14px;
-}
-
-.composerButton:hover {
-  background:
-    rgba(255, 255, 255, 0.08);
-
-  color: var(--text);
-}
-
-.composerButton.activeVoice {
-  border-color:
-    rgba(255, 111, 145, 0.3);
-
-  background:
-    rgba(255, 111, 145, 0.1);
-
-  color: #ff9bb4;
-
-  animation:
-    voicePulse 1.2s
-    ease-in-out
-    infinite;
-}
-
-@keyframes voicePulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-
-  50% {
-    transform: scale(1.04);
-  }
-}
-
-.composerButton:disabled {
-  opacity: 0.35;
-
-  cursor: not-allowed;
-}
-
-.sendButton {
-  border: 0;
-
-  background:
-    linear-gradient(
-      145deg,
-      #b487ff,
-      #7747bd
-    );
-
-  color: white;
-
-  font-size: 18px;
-  font-weight: 800;
-
-  box-shadow:
-    0 7px 20px
-      rgba(137, 80, 220, 0.22);
-}
-
-.sendButton:hover:not(
-    :disabled
-  ) {
-  transform:
-    translateY(-1px);
-
-  box-shadow:
-    0 10px 25px
-      rgba(137, 80, 220, 0.3);
-}
-
-.sendButton:disabled {
-  opacity: 0.35;
-
-  cursor: not-allowed;
-
-  box-shadow: none;
-}
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (min-width: 700px) {
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
   .mayaTopbar {
-    padding-left: 28px;
-    padding-right: 28px;
+    padding: 0 13px;
   }
 
-  .mayaLiveSection {
-    padding-left: 28px;
-    padding-right: 28px;
+  .mayaLiveHeader {
+    padding: 0 13px;
   }
 
   .mayaLiveContent {
-    max-width: 900px;
-    margin: 0 auto;
+    min-height: 190px;
+    padding: 8px 12px 14px;
   }
 
-  .liveHeader {
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .moodRow {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .mayaChat {
-    padding-left: 28px;
-    padding-right: 28px;
-  }
-
-  .mayaComposer {
-    padding-left: 28px;
-    padding-right: 28px;
-  }
-
-  .mayaNotice {
-    padding-left: 28px;
-    padding-right: 28px;
-  }
-
-  .attachmentBar {
-    margin-left: 28px;
-    margin-right: 28px;
-  }
-
-  /* ONLY MAYA SIZE CHANGED */
   .mayaAvatarWrap {
     width: 175px;
     height: 175px;
-
     flex-basis: 175px;
   }
 
@@ -1601,136 +684,39 @@ img {
     height: 163px;
   }
 
-  .mayaLiveName {
-    font-size: 25px;
-  }
-}
-
-/* =========================================================
-   DESKTOP
-   ========================================================= */
-
-@media (min-width: 1000px) {
-  .mayaApp {
-    max-width: 980px;
-
-    margin: 0 auto;
-
-    border-left:
-      1px solid var(--border);
-
-    border-right:
-      1px solid var(--border);
-
-    box-shadow:
-      0 0 80px
-        rgba(0, 0, 0, 0.4);
+  .mayaChat {
+    padding: 14px 12px 20px;
   }
 
-  .mayaLiveSection {
-    padding-top: 17px;
-    padding-bottom: 15px;
-  }
-
-  .mayaLiveContent {
-    min-height: 190px;
-  }
-
-  /* ONLY MAYA SIZE CHANGED */
-  .mayaAvatarWrap {
-    width: 185px;
-    height: 185px;
-
-    flex-basis: 185px;
-  }
-
-  .mayaAvatarImage {
-    width: 173px;
-    height: 173px;
-  }
-
-  .mayaLiveName {
-    font-size: 27px;
+  .mayaComposerWrap {
+    padding: 9px 12px 12px;
   }
 
   .messageBubble {
-    max-width: 650px;
+    max-width: 86%;
   }
 }
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
+/* =========================
+   SMALL MOBILE
+========================= */
 
 @media (max-width: 560px) {
-  :root {
-    --topbar-height: 58px;
-  }
-
   .mayaTopbar {
-    padding:
-      0 12px;
+    height: 58px;
   }
 
-  .mayaBrandIcon {
-    width: 34px;
-    height: 34px;
-
-    flex-basis: 34px;
-
-    border-radius: 11px;
-  }
-
-  .mayaBrandName {
-    font-size: 13px;
-  }
-
-  .mayaBrandStatus {
-    font-size: 9px;
-  }
-
-  .topActionButton {
-    width: 34px;
-    height: 34px;
-
-    border-radius: 10px;
-  }
-
-  .mayaLiveSection {
-    padding:
-      10px 12px 9px;
-  }
-
-  .liveHeader {
-    margin-bottom: 4px;
-  }
-
-  .liveTitle {
-    font-size: 9px;
-  }
-
-  .liveSubtitle {
-    font-size: 8px;
-  }
-
-  .liveStatus {
-    padding:
-      4px 7px;
-
-    font-size: 8px;
+  .mayaBrandSub {
+    display: none;
   }
 
   .mayaLiveContent {
-    min-height: 116px;
-
-    gap: 11px;
+    min-height: 120px;
   }
 
-  /* MOBILE KEKAL KECIL SUPAYA CHAT TAK TERGANGGU */
   .mayaAvatarWrap {
     width: 94px;
     height: 94px;
-
     flex-basis: 94px;
   }
 
@@ -1739,147 +725,46 @@ img {
     height: 87px;
   }
 
-  .mayaAvatarGlow {
-    inset: 5px;
-  }
-
-  .mayaAvatarStatus {
-    bottom: -3px;
-
-    min-width: 58px;
-
-    padding:
-      3px 5px;
-
-    font-size: 7px;
-  }
-
-  .mayaLiveName {
-    font-size: 18px;
-  }
-
-  .mayaLiveMood {
-    margin-top: 4px;
-
-    padding:
-      4px 7px;
-
-    font-size: 8px;
-  }
-
-  .mayaLiveHint {
-    margin-top: 5px;
-
-    font-size: 9px;
-  }
-
-  .moodRow {
-    gap: 4px;
-
-    padding-top: 3px;
+  .mayaMoodBar {
+    justify-content: flex-start;
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .moodButton {
-    padding:
-      5px 7px;
-
-    font-size: 8px;
-  }
-
-  .mayaChat {
-    padding:
-      12px 12px 15px;
+    min-width: 34px;
+    height: 30px;
+    padding: 0 8px;
   }
 
   .messageBubble {
-    max-width: 84%;
-
-    padding:
-      9px 10px;
-
-    border-radius: 14px;
-  }
-
-  .messageText {
-    font-size: 11px;
-  }
-
-  .messageTime {
-    font-size: 7px;
-  }
-
-  .messageAvatar {
-    width: 24px;
-    height: 24px;
-
-    flex-basis: 24px;
-
-    border-radius: 8px;
-
-    font-size: 9px;
+    max-width: 91%;
+    font-size: 12.5px;
   }
 
   .mayaComposer {
-    gap: 4px;
-
-    padding:
-      7px 9px
-      calc(
-        7px +
-        env(
-          safe-area-inset-bottom
-        )
-      );
+    gap: 5px;
   }
 
-  .composerButton,
-  .sendButton {
-    width: 35px;
-    height: 35px;
-
-    flex-basis: 35px;
-
-    border-radius: 10px;
+  .composerButton {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
   }
 
-  .mayaComposer textarea {
-    min-height: 35px;
-
-    padding:
-      9px 9px;
-
-    font-size: 10px;
-
-    border-radius: 10px;
-  }
-
-  .mayaNotice {
-    padding:
-      4px 10px 5px;
-
-    font-size: 7px;
-  }
-
-  .attachmentBar {
-    margin:
-      0 9px 5px;
-  }
-
-  .settingsPanel {
-    padding:
-      12px;
+  .mayaInput {
+    min-height: 40px;
   }
 }
 
-/* =========================================================
-   VERY SMALL PHONES
-   ========================================================= */
+/* =========================
+   VERY SMALL PHONE
+========================= */
 
 @media (max-width: 370px) {
   .mayaAvatarWrap {
     width: 82px;
     height: 82px;
-
     flex-basis: 82px;
   }
 
@@ -1888,55 +773,11 @@ img {
     height: 76px;
   }
 
-  .mayaLiveName {
-    font-size: 16px;
+  .mayaLiveContent {
+    min-height: 108px;
   }
 
-  .mayaLiveHint {
-    font-size: 8px;
-  }
-
-  .messageBubble {
-    max-width: 88%;
-  }
-
-  .composerButton,
-  .sendButton {
-    width: 32px;
-    height: 32px;
-
-    flex-basis: 32px;
-  }
-}
-
-/* =========================================================
-   ACCESSIBILITY
-   ========================================================= */
-
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline:
-    2px solid
-    rgba(168, 117, 255, 0.7);
-
-  outline-offset: 2px;
-}
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (
-  prefers-reduced-motion: reduce
-) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.001ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
+  .mayaBrandTitle {
+    font-size: 13px;
   }
 }
