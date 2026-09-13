@@ -121,8 +121,7 @@ img {
   align-items: center;
   justify-content: space-between;
 
-  padding:
-    0 20px;
+  padding: 0 20px;
 
   background:
     rgba(9, 8, 15, 0.88);
@@ -404,7 +403,7 @@ img {
 
   gap: 15px;
 
-  min-height: 155px;
+  min-height: 180px;
 }
 
 /* =========================================================
@@ -414,10 +413,10 @@ img {
 .mayaAvatarWrap {
   position: relative;
 
-  width: 128px;
-  height: 128px;
+  width: 170px;
+  height: 170px;
 
-  flex: 0 0 128px;
+  flex: 0 0 170px;
 
   display: grid;
   place-items: center;
@@ -450,8 +449,8 @@ img {
   position: relative;
   z-index: 2;
 
-  width: 118px;
-  height: 118px;
+  width: 158px;
+  height: 158px;
 
   display: block;
 
@@ -1589,16 +1588,17 @@ img {
     margin-right: 28px;
   }
 
+  /* ONLY MAYA SIZE CHANGED */
   .mayaAvatarWrap {
-    width: 145px;
-    height: 145px;
+    width: 175px;
+    height: 175px;
 
-    flex-basis: 145px;
+    flex-basis: 175px;
   }
 
   .mayaAvatarImage {
-    width: 136px;
-    height: 136px;
+    width: 163px;
+    height: 163px;
   }
 
   .mayaLiveName {
@@ -1633,19 +1633,20 @@ img {
   }
 
   .mayaLiveContent {
-    min-height: 170px;
+    min-height: 190px;
   }
 
+  /* ONLY MAYA SIZE CHANGED */
   .mayaAvatarWrap {
-    width: 155px;
-    height: 155px;
+    width: 185px;
+    height: 185px;
 
-    flex-basis: 155px;
+    flex-basis: 185px;
   }
 
   .mayaAvatarImage {
-    width: 145px;
-    height: 145px;
+    width: 173px;
+    height: 173px;
   }
 
   .mayaLiveName {
@@ -1725,6 +1726,7 @@ img {
     gap: 11px;
   }
 
+  /* MOBILE KEKAL KECIL SUPAYA CHAT TAK TERGANGGU */
   .mayaAvatarWrap {
     width: 94px;
     height: 94px;
