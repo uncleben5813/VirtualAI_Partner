@@ -1,1354 +1,1208 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --bg: #f4f6f8;
+  --surface: #ffffff;
+  --surface-soft: #f8fafc;
+  --border: #e5e7eb;
+  --border-soft: #eef0f3;
+  --text: #111827;
+  --muted: #6b7280;
+  --muted-2: #9ca3af;
+  --blue: #007aff;
+  --blue-dark: #0066d6;
+  --blue-soft: #eaf3ff;
+  --green: #22c55e;
+  --red: #ef4444;
+  --shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+}
+
 * {
-    box-sizing: border-box;
-    }
+  box-sizing: border-box;
+}
 
 html,
 body {
-margin: 0;
-padding: 0;
-width: 100%;
-height: 100%;
-overflow: hidden;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-font-family:
--apple-system,
-BlinkMacSystemFont,
-“SF Pro Display”,
-“SF Pro Text”,
-“Segoe UI”,
-Roboto,
-Helvetica,
-Arial,
-sans-serif;
-
-background: #f2f4f7;
-color: #111827;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "SF Pro Text",
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
 input,
 textarea,
 select {
-font: inherit;
+  font: inherit;
 }
 
 button {
-border: 0;
-cursor: pointer;
+  border: 0;
 }
 
-.mayaApp {
-width: 100%;
-height: 100dvh;
-min-height: 100dvh;
-display: flex;
-justify-content: center;
-background:
-radial-gradient(
-circle at 50% 0%,
-#ffffff 0,
-#f5f7fa 48%,
-#eef1f5 100%
-);
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
-.mayaShell {
-width: min(100%, 760px);
-height: 100dvh;
-min-height: 100dvh;
-display: flex;
-flex-direction: column;
-overflow: hidden;
-background: rgba(255, 255, 255, 0.96);
-box-shadow: 0 0 50px rgba(15, 23, 42, 0.08);
-position: relative;
+img {
+  max-width: 100%;
+}
+
+.mayaApp,
+.companionApp {
+  width: 100%;
+  min-height: 100dvh;
+  background:
+    radial-gradient(
+      circle at 50% -10%,
+      rgba(0, 122, 255, 0.08),
+      transparent 35%
+    ),
+    var(--bg);
+  display: flex;
+  justify-content: center;
+}
+
+.companionShell {
+  width: 100%;
+  max-width: 900px;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  box-shadow: 0 0 50px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
 }
 
 /* TOP BAR */
 
-.mayaTopbar {
-height: 68px;
-min-height: 68px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 10px 16px;
-border-bottom: 1px solid #e9edf2;
-background: rgba(255, 255, 255, 0.96);
-backdrop-filter: blur(18px);
-z-index: 20;
+.topBar {
+  height: 72px;
+  flex: 0 0 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  border-bottom: 1px solid var(--border-soft);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+  position: relative;
+  z-index: 20;
 }
 
-.mayaBrand {
-display: flex;
-align-items: center;
-gap: 10px;
+.brandArea {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
 }
 
-.mayaBrandAvatar {
-width: 43px;
-height: 43px;
-overflow: hidden;
-border-radius: 50%;
-background: #eef2f7;
-position: relative;
+.brandAvatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #0a84ff, #5aa9ff);
+  color: #fff;
+  font-size: 19px;
+  font-weight: 800;
+  box-shadow: 0 5px 15px rgba(0, 122, 255, 0.25);
 }
 
-.mayaBrandAvatar .mayaVisual {
-transform: scale(0.68);
-transform-origin: center bottom;
-height: 100%;
+.brandName {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
 }
 
-.mayaBrandName {
-font-size: 16px;
-font-weight: 750;
-letter-spacing: -0.2px;
+.brandStatus {
+  margin-top: 3px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
 }
 
-.mayaOnline {
-margin-top: 2px;
-display: flex;
-align-items: center;
-gap: 5px;
-color: #6b7280;
-font-size: 11px;
+.onlineDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
 }
 
-.mayaOnline span {
-width: 7px;
-height: 7px;
-border-radius: 50%;
-background: #22c55e;
-box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
-}
-
-.mayaTopActions {
-display: flex;
-gap: 7px;
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 
 .iconButton {
-width: 38px;
-height: 38px;
-border-radius: 12px;
-background: #f4f6f8;
-color: #374151;
-font-size: 19px;
-transition: 0.2s ease;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  color: #4b5563;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease;
 }
 
 .iconButton:hover {
-background: #e9edf2;
-transform: translateY(-1px);
+  background: var(--blue-soft);
+  border-color: #cfe3ff;
+  transform: translateY(-1px);
 }
 
 /* LIVE AI */
 
-.mayaLiveSection {
-flex: 0 0 auto;
-padding: 10px 14px 9px;
-background:
-linear-gradient(
-180deg,
-#ffffff 0%,
-#fafbfd 100%
-);
-border-bottom: 1px solid #edf0f4;
+.liveAiCard {
+  flex: 0 0 auto;
+  min-height: 250px;
+  padding: 20px 24px 18px;
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f7faff 55%,
+      #eef6ff 100%
+    );
+  border-bottom: 1px solid var(--border-soft);
+  position: relative;
+  overflow: hidden;
 }
 
-.liveHeader {
-height: 25px;
-display: flex;
-align-items: center;
-justify-content: space-between;
+.liveAiCard::before {
+  content: "";
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  right: -90px;
+  top: -120px;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.06);
+  pointer-events: none;
 }
 
-.liveHeader > div {
-display: flex;
-align-items: center;
-gap: 7px;
+.liveAiCard::after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  left: -80px;
+  bottom: -90px;
+  border-radius: 50%;
+  background: rgba(88, 166, 255, 0.05);
+  pointer-events: none;
 }
 
-.liveHeader strong {
-font-size: 10px;
-letter-spacing: 1.1px;
-color: #374151;
+.liveAiInfo {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-width: 0;
 }
 
-.liveDot {
-width: 7px;
-height: 7px;
-border-radius: 50%;
-background: #ef4444;
-animation: livePulse 1.5s infinite;
+.liveAiHeader {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
 }
 
-.liveStatus {
-font-size: 10px;
-color: #9ca3af;
+.liveBadge,
+.moodBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
 }
 
-/* REALISTIC STYLE AVATAR */
-
-.mayaStage {
-height: 220px;
-position: relative;
-display: flex;
-align-items: center;
-justify-content: center;
-overflow: hidden;
+.liveBadge {
+  padding: 6px 9px;
+  color: #0066d6;
+  background: var(--blue-soft);
 }
+
+.moodBadge {
+  padding: 6px 9px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--border);
+  color: #4b5563;
+  letter-spacing: 0;
+}
+
+.livePulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+  animation: pulse 1.8s infinite;
+}
+
+.liveAiName {
+  margin-top: 13px;
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.liveAiReaction {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.liveAiBars {
+  margin-top: 17px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.liveAiBars span {
+  width: 3px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--blue);
+  opacity: 0.45;
+  animation: voiceBar 1.2s ease-in-out infinite;
+}
+
+.liveAiBars span:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.liveAiBars span:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.liveAiBars span:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.liveAiBars span:nth-child(5) {
+  animation-delay: 0.2s;
+}
+
+.liveAiBars span:nth-child(6) {
+  animation-delay: 0.1s;
+}
+
+.liveAiBars span:nth-child(7) {
+  animation-delay: 0.05s;
+}
+
+/* MAYA VISUAL */
 
 .mayaVisual {
-–skin: #f2c7ad;
-–skinDark: #d99d82;
-–skinLight: #ffe0cb;
-–hijab: #263142;
-–hijabLight: #39475b;
-–hijabDark: #17202d;
-–eye: #39271f;
-
-width: 205px;
-height: 215px;
-position: relative;
-isolation: isolate;
-transition:
-transform 0.45s ease,
-filter 0.45s ease;
+  width: 205px;
+  height: 215px;
+  flex: 0 0 205px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
-.mayaAura {
-position: absolute;
-width: 190px;
-height: 190px;
-left: 50%;
-top: 12px;
-transform: translateX(-50%);
-border-radius: 50%;
-background:
-radial-gradient(
-circle,
-rgba(214, 225, 240, 0.8),
-rgba(255, 255, 255, 0) 70%
-);
-filter: blur(4px);
-z-index: -3;
-}
-
-.mayaHead {
-position: absolute;
-width: 178px;
-height: 210px;
-left: 50%;
-transform: translateX(-50%);
-bottom: -4px;
-}
-
-.mayaHairBack {
-position: absolute;
-width: 142px;
-height: 185px;
-left: 18px;
-top: 10px;
-border-radius: 55% 55% 40% 40%;
-background:
-linear-gradient(
-145deg,
-#161c25,
-#303846 48%,
-#151a22
-);
-box-shadow:
-inset -14px -10px 24px rgba(0, 0, 0, 0.28),
-0 14px 22px rgba(15, 23, 42, 0.13);
-z-index: 1;
-}
-
-.mayaHijabOuter {
-position: absolute;
-width: 174px;
-height: 190px;
-left: 2px;
-top: 12px;
-border-radius: 52% 52% 42% 42%;
-background:
-linear-gradient(
-145deg,
-var(–hijabLight) 0%,
-var(–hijab) 45%,
-var(–hijabDark) 100%
-);
-box-shadow:
-inset 10px 8px 18px rgba(255, 255, 255, 0.06),
-inset -16px -12px 25px rgba(0, 0, 0, 0.25),
-0 18px 28px rgba(15, 23, 42, 0.15);
-z-index: 2;
-}
-
-.mayaHijabHighlight {
-position: absolute;
-width: 90px;
-height: 125px;
-left: 18px;
-top: 10px;
-border-radius: 50%;
-background:
-linear-gradient(
-115deg,
-rgba(255, 255, 255, 0.12),
-rgba(255, 255, 255, 0)
-);
-transform: rotate(-13deg);
-}
-
-.mayaHijabShadow {
-position: absolute;
-width: 85px;
-height: 115px;
-right: 8px;
-bottom: 3px;
-border-radius: 50%;
-background:
-linear-gradient(
-145deg,
-rgba(0, 0, 0, 0),
-rgba(0, 0, 0, 0.24)
-);
+.mayaVisual::before {
+  content: "";
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: rgba(0, 122, 255, 0.07);
+  filter: blur(2px);
 }
 
 .mayaFace {
-position: absolute;
-width: 118px;
-height: 142px;
-left: 30px;
-top: 32px;
-border-radius:
-48% 48%
-43% 43%
-52% 52%;
-background:
-radial-gradient(
-circle at 38% 30%,
-var(–skinLight),
-var(–skin) 52%,
-var(–skinDark) 100%
-);
-box-shadow:
-inset 6px 5px 12px rgba(255, 255, 255, 0.25),
-inset -6px -7px 13px rgba(122, 69, 52, 0.1),
-0 10px 16px rgba(15, 23, 42, 0.12);
-z-index: 4;
-transition: transform 0.4s ease;
+  width: 150px;
+  height: 190px;
+  position: relative;
+  transform-origin: center bottom;
+  animation: breathing 4.5s ease-in-out infinite;
 }
 
-.mayaForeheadGlow {
-position: absolute;
-width: 48px;
-height: 35px;
-left: 24px;
-top: 8px;
-border-radius: 50%;
-background: rgba(255, 255, 255, 0.14);
-filter: blur(7px);
+.mayaHair {
+  position: absolute;
+  width: 145px;
+  height: 155px;
+  top: 9px;
+  left: 2px;
+  border-radius: 49% 51% 42% 43%;
+  background:
+    radial-gradient(
+      circle at 38% 22%,
+      rgba(255, 255, 255, 0.16),
+      transparent 22%
+    ),
+    linear-gradient(145deg, #263247, #0f172a 75%);
+  box-shadow:
+    inset -12px -14px 22px rgba(0, 0, 0, 0.22),
+    0 18px 28px rgba(15, 23, 42, 0.13);
 }
 
-.mayaBrows {
-position: absolute;
-top: 44px;
-left: 18px;
-right: 18px;
-display: flex;
-justify-content: space-between;
+.mayaHead {
+  position: absolute;
+  width: 105px;
+  height: 132px;
+  left: 23px;
+  top: 25px;
+  border-radius: 47% 53% 48% 48%;
+  background:
+    radial-gradient(
+      circle at 40% 24%,
+      rgba(255, 255, 255, 0.45),
+      transparent 19%
+    ),
+    linear-gradient(
+      145deg,
+      #f7d2bd,
+      #edb79f 60%,
+      #d99a81
+    );
+  box-shadow:
+    inset 5px 0 12px rgba(255, 255, 255, 0.2),
+    inset -7px -9px 15px rgba(150, 83, 63, 0.08),
+    0 9px 20px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
 }
 
-.brow {
-width: 30px;
-height: 5px;
-border-radius: 100%;
-background: #563b31;
-transition: transform 0.35s ease;
-}
-
-.brow.left {
-transform: rotate(5deg);
-}
-
-.brow.right {
-transform: rotate(-5deg);
+.mayaForehead {
+  position: absolute;
+  width: 62px;
+  height: 22px;
+  left: 22px;
+  top: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.13);
+  filter: blur(5px);
 }
 
 .mayaEyes {
-position: absolute;
-top: 51px;
-left: 17px;
-right: 17px;
-display: flex;
-justify-content: space-between;
+  position: absolute;
+  left: 17px;
+  right: 17px;
+  top: 49px;
+  display: flex;
+  justify-content: space-between;
 }
 
-.eye {
-width: 35px;
-height: 16px;
-border-radius: 50%;
-background: #fff;
-position: relative;
-overflow: hidden;
-box-shadow:
-0 1px 2px rgba(0, 0, 0, 0.1);
-animation: blink 6s infinite;
-transform-origin: center;
+.mayaEye {
+  width: 25px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid rgba(100, 60, 50, 0.12);
+  position: relative;
+  overflow: hidden;
+  animation: blink 5.5s infinite;
+  transform-origin: center;
 }
 
-.eye::before {
-content: “”;
-position: absolute;
-width: 17px;
-height: 17px;
-left: 9px;
-top: -1px;
-border-radius: 50%;
-background:
-radial-gradient(
-circle at 50% 48%,
-#050505 0 27%,
-#5c3827 29% 54%,
-#21140e 56% 100%
-);
+.mayaPupil {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: #34251f;
+  box-shadow: 0 0 0 2px rgba(52, 37, 31, 0.06);
 }
 
-.eye i {
-position: absolute;
-width: 4px;
-height: 4px;
-border-radius: 50%;
-background: white;
-z-index: 2;
-left: 18px;
-top: 3px;
+.mayaPupil::after {
+  content: "";
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  left: 2px;
+  top: 1px;
+  border-radius: 50%;
+  background: #fff;
 }
 
 .mayaNose {
-position: absolute;
-width: 16px;
-height: 28px;
-left: 51px;
-top: 67px;
-}
-
-.mayaNose::before {
-content: “”;
-position: absolute;
-width: 10px;
-height: 22px;
-left: 3px;
-border-right: 2px solid rgba(157, 92, 70, 0.2);
-border-radius: 50%;
-}
-
-.mayaNose span {
-position: absolute;
-width: 12px;
-height: 4px;
-bottom: 1px;
-left: 2px;
-border-bottom: 2px solid rgba(143, 78, 60, 0.3);
-border-radius: 50%;
+  position: absolute;
+  width: 10px;
+  height: 20px;
+  left: 47px;
+  top: 62px;
+  border-right: 1px solid rgba(145, 79, 61, 0.2);
+  border-bottom: 1px solid rgba(145, 79, 61, 0.14);
+  border-radius: 0 0 10px 0;
 }
 
 .mayaMouth {
-position: absolute;
-width: 31px;
-height: 13px;
-left: 43px;
-top: 101px;
-border-bottom: 3px solid #a94f5d;
-border-radius: 0 0 50% 50%;
-transition:
-width 0.15s ease,
-height 0.15s ease,
-transform 0.15s ease;
+  position: absolute;
+  width: 28px;
+  height: 11px;
+  left: 39px;
+  top: 91px;
+  border-bottom: 2px solid #9e4e55;
+  border-radius: 0 0 50% 50%;
+  transition:
+    height 0.12s ease,
+    transform 0.12s ease;
 }
 
-.mayaMouth span {
-position: absolute;
-width: 18px;
-height: 4px;
-left: 5px;
-bottom: -1px;
-border-radius: 50%;
-background: rgba(255, 160, 172, 0.55);
+.mayaMouth::after {
+  content: "";
+  position: absolute;
+  width: 13px;
+  height: 3px;
+  left: 7px;
+  bottom: -2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
 }
 
-.mayaBlush {
-position: absolute;
-width: 25px;
-height: 10px;
-top: 91px;
-border-radius: 50%;
-background: rgba(221, 106, 116, 0.2);
-filter: blur(4px);
+.mouthSpeaking {
+  height: 16px;
+  transform: scaleX(1.08);
+  background: rgba(108, 50, 53, 0.25);
+  border-radius: 50%;
 }
 
-.mayaBlush.left {
-left: 8px;
+.mayaCheek {
+  position: absolute;
+  width: 22px;
+  height: 11px;
+  top: 82px;
+  border-radius: 50%;
+  background: rgba(240, 112, 121, 0.12);
+  filter: blur(3px);
 }
 
-.mayaBlush.right {
-right: 8px;
+.mayaCheek.left {
+  left: 9px;
 }
 
-.mayaNeck {
-position: absolute;
-width: 43px;
-height: 38px;
-left: 67px;
-bottom: 5px;
-border-radius: 0 0 35% 35%;
-background: linear-gradient(
-145deg,
-var(–skinLight),
-var(–skinDark)
-);
-z-index: 3;
+.mayaCheek.right {
+  right: 9px;
 }
 
-.mayaShoulders {
-position: absolute;
-width: 177px;
-height: 58px;
-left: 1px;
-bottom: -10px;
-border-radius: 55% 55% 0 0;
-background:
-linear-gradient(
-150deg,
-#303c50,
-#1b2431
-);
-box-shadow:
-inset 0 9px 13px rgba(255, 255, 255, 0.06);
-z-index: 2;
+.mood-happy .mayaMouth {
+  height: 14px;
+  border-bottom-width: 3px;
 }
 
-/* EXPRESSIONS */
-
-.maya-happy .mayaMouth {
-width: 37px;
-height: 17px;
-left: 40px;
+.mood-caring .mayaCheek {
+  background: rgba(255, 120, 130, 0.16);
 }
 
-.maya-happy .mayaBlush {
-opacity: 1;
+.mood-playful .mayaMouth {
+  transform: rotate(-4deg);
 }
 
-.maya-happy .brow.left {
-transform: rotate(1deg);
+.mood-upset .mayaMouth {
+  transform: rotate(180deg);
 }
 
-.maya-happy .brow.right {
-transform: rotate(-1deg);
+.reaction-typing,
+.reaction-thinking {
+  animation: thinkingFloat 1.6s ease-in-out infinite;
 }
 
-.maya-caring .mayaMouth {
-width: 30px;
+.reaction-listening {
+  transform: scale(1.015);
 }
 
-.maya-caring .mayaFace {
-transform: translateY(1px);
+.reaction-happy {
+  animation: happyBounce 1.8s ease-in-out infinite;
 }
 
-.maya-playful .mayaMouth {
-width: 34px;
-transform: rotate(-3deg);
-}
-
-.maya-playful .brow.left {
-transform: rotate(-9deg);
-}
-
-.maya-playful .brow.right {
-transform: rotate(8deg);
-}
-
-.maya-calm .mayaMouth {
-width: 27px;
-}
-
-.maya-upset .mayaMouth {
-width: 29px;
-border-bottom: 0;
-border-top: 3px solid #a94f5d;
-border-radius: 50%;
-transform: translateY(5px);
-}
-
-.maya-upset .brow.left {
-transform: rotate(14deg);
-}
-
-.maya-upset .brow.right {
-transform: rotate(-14deg);
-}
-
-/* NATURAL MOTION */
-
-.mayaVisual.isReacting {
-animation: naturalReact 0.85s ease;
-}
-
-.mayaVisual.isThinking .mayaHead {
-animation: thinkingMotion 2.2s ease-in-out infinite;
-}
-
-.mayaVisual.isSpeaking .mayaHead {
-animation: speakingMotion 1.1s ease-in-out infinite;
-}
-
-.mayaVisual.isSpeaking .mayaMouth {
-animation: mouthTalk 0.22s infinite alternate;
-}
-
-.mayaVisual.isSpeaking .mayaEyes {
-animation: eyeTalk 2.8s ease-in-out infinite;
-}
-
-.mayaVoiceRing {
-position: absolute;
-left: 50%;
-bottom: 2px;
-transform: translateX(-50%);
-width: 64px;
-height: 16px;
-display: flex;
-justify-content: center;
-align-items: center;
-gap: 4px;
-}
-
-.mayaVoiceRing i {
-width: 4px;
-height: 8px;
-border-radius: 20px;
-background: #8b9aae;
-animation: voiceBar 0.65s ease-in-out infinite alternate;
-}
-
-.mayaVoiceRing i:nth-child(2) {
-animation-delay: 0.12s;
-}
-
-.mayaVoiceRing i:nth-child(3) {
-animation-delay: 0.24s;
-}
-
-.mayaThinking {
-position: absolute;
-bottom: 14px;
-left: 50%;
-transform: translateX(-50%);
-display: flex;
-gap: 4px;
-padding: 7px 10px;
-border-radius: 20px;
-background: rgba(255, 255, 255, 0.86);
-box-shadow: 0 5px 18px rgba(15, 23, 42, 0.1);
-}
-
-.mayaThinking span {
-width: 5px;
-height: 5px;
-border-radius: 50%;
-background: #94a3b8;
-animation: thinkingDots 0.9s infinite alternate;
-}
-
-.mayaThinking span:nth-child(2) {
-animation-delay: 0.15s;
-}
-
-.mayaThinking span:nth-child(3) {
-animation-delay: 0.3s;
-}
-
-.mayaMoodBadge {
-position: absolute;
-right: 12px;
-bottom: 10px;
-display: flex;
-align-items: center;
-gap: 5px;
-padding: 6px 10px;
-border-radius: 20px;
-background: rgba(255, 255, 255, 0.88);
-border: 1px solid rgba(226, 232, 240, 0.9);
-color: #64748b;
-font-size: 10px;
-box-shadow: 0 5px 15px rgba(15, 23, 42, 0.06);
-}
-
-/* MOOD */
-
-.moodSelector {
-display: flex;
-gap: 5px;
-justify-content: center;
-overflow-x: auto;
-scrollbar-width: none;
-}
-
-.moodSelector::-webkit-scrollbar {
-display: none;
-}
-
-.moodSelector button {
-flex: 0 0 auto;
-padding: 5px 8px;
-border-radius: 14px;
-background: #f3f5f8;
-color: #7b8491;
-font-size: 10px;
-transition: 0.2s ease;
-}
-
-.moodSelector button span {
-margin-right: 3px;
-}
-
-.moodSelector button.active {
-background: #e9eef6;
-color: #263142;
-box-shadow:
-inset 0 0 0 1px #d9e1ec;
-}
-
-/* CHAT */
-
-.mayaChat {
-flex: 1 1 auto;
-min-height: 0;
-overflow-y: auto;
-overflow-x: hidden;
-padding: 18px 14px 16px;
-scroll-behavior: smooth;
-background:
-linear-gradient(
-180deg,
-#fafbfd 0%,
-#f7f9fb 100%
-);
-}
-
-.mayaChat::-webkit-scrollbar {
-width: 5px;
-}
-
-.mayaChat::-webkit-scrollbar-thumb {
-background: #d6dce4;
-border-radius: 10px;
-}
-
-.mayaWelcome {
-min-height: 100%;
-display: flex;
-align-items: center;
-justify-content: center;
-flex-direction: column;
-text-align: center;
-padding: 30px;
-color: #64748b;
-}
-
-.welcomeIcon {
-width: 54px;
-height: 54px;
-display: flex;
-align-items: center;
-justify-content: center;
-border-radius: 18px;
-background: white;
-box-shadow: 0 8px 25px rgba(15, 23, 42, 0.07);
-font-size: 25px;
-margin-bottom: 12px;
-}
-
-.mayaWelcome h2 {
-margin: 0 0 6px;
-color: #273142;
-font-size: 21px;
-}
-
-.mayaWelcome p {
-max-width: 350px;
-margin: 0;
-font-size: 13px;
-line-height: 1.55;
-}
-
-.messageRow {
-display: flex;
-align-items: flex-end;
-gap: 7px;
-margin-bottom: 12px;
-}
-
-.messageRow.user {
-justify-content: flex-end;
-}
-
-.messageAvatar {
-width: 31px;
-height: 31px;
-flex: 0 0 31px;
-overflow: hidden;
-border-radius: 50%;
-background: #e9edf3;
-}
-
-.messageAvatar .mayaVisual {
-transform: scale(0.55);
-transform-origin: center bottom;
-width: 205px;
-height: 215px;
-left: -86px;
-top: -83px;
-}
-
-.messageBubble {
-max-width: min(76%, 540px);
-padding: 10px 13px;
-border-radius: 18px;
-background: #ffffff;
-border: 1px solid #e9edf2;
-box-shadow: 0 3px 12px rgba(15, 23, 42, 0.035);
-color: #293241;
-font-size: 14px;
-line-height: 1.5;
-white-space: pre-wrap;
-overflow-wrap: anywhere;
-}
-
-.messageRow.assistant .messageBubble {
-border-bottom-left-radius: 5px;
-}
-
-.messageRow.user .messageBubble {
-background: #1677ff;
-border-color: #1677ff;
-color: white;
-border-bottom-right-radius: 5px;
-box-shadow: 0 4px 12px rgba(22, 119, 255, 0.13);
-}
-
-.errorBubble {
-color: #b42318;
-background: #fff7f6 !important;
-border-color: #ffd5d0 !important;
-}
-
-.messageImage {
-display: block;
-max-width: 260px;
-max-height: 260px;
-border-radius: 12px;
-margin-bottom: 7px;
-}
-
-/* THINKING */
-
-.thinkingBubble {
-min-width: 60px;
-height: 38px;
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 4px;
-}
-
-.thinkingBubble span {
-width: 5px;
-height: 5px;
-border-radius: 50%;
-background: #9aa5b4;
-animation: thinkingDots 0.9s infinite alternate;
-}
-
-.thinkingBubble span:nth-child(2) {
-animation-delay: 0.15s;
-}
-
-.thinkingBubble span:nth-child(3) {
-animation-delay: 0.3s;
+.mayaVisual:has(.mouthSpeaking) .mayaFace {
+  animation-duration: 2.2s;
 }
 
 /* SETTINGS */
 
 .settingsPanel {
-position: absolute;
-z-index: 50;
-top: 68px;
-right: 12px;
-width: min(360px, calc(100% - 24px));
-max-height: calc(100dvh - 82px);
-overflow-y: auto;
-padding: 16px;
-border: 1px solid #e4e8ee;
-border-radius: 18px;
-background: rgba(255, 255, 255, 0.98);
-box-shadow: 0 18px 50px rgba(15, 23, 42, 0.16);
-backdrop-filter: blur(20px);
+  flex: 0 0 auto;
+  padding: 18px 22px 20px;
+  border-bottom: 1px solid var(--border-soft);
+  background: #fbfcfe;
+  position: relative;
+  z-index: 15;
 }
 
-.settingsTitle {
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-margin-bottom: 14px;
+.settingsHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 17px;
 }
 
-.settingsTitle strong {
-display: block;
-font-size: 15px;
+.settingsHeader h2 {
+  margin: 0;
+  font-size: 16px;
 }
 
-.settingsTitle small {
-display: block;
-margin-top: 3px;
-color: #9aa3af;
-font-size: 11px;
+.settingsHeader p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
 }
 
-.closeSettings {
-width: 30px;
-height: 30px;
-border-radius: 9px;
-background: #f3f5f7;
-color: #64748b;
-font-size: 18px;
+.closeButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 1;
 }
 
-.settingsPanel label {
-display: block;
-margin-bottom: 12px;
+.settingsField {
+  display: block;
+  margin-bottom: 14px;
 }
 
-.settingsPanel label > span {
-display: block;
-margin-bottom: 5px;
-color: #667085;
-font-size: 11px;
-font-weight: 650;
+.settingsField > span {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 700;
 }
 
-.settingsPanel input:not([type=“checkbox”]):not([type=“range”]),
-.settingsPanel textarea,
+.settingsField input,
+.settingsField textarea,
+.settingsPanel input:not([type="checkbox"]):not([type="range"]),
 .settingsPanel select {
-width: 100%;
-border: 1px solid #e0e5eb;
-outline: none;
-border-radius: 10px;
-background: #fafbfc;
-color: #273142;
-padding: 9px 10px;
-font-size: 12px;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: #fff;
+  color: var(--text);
+  padding: 10px 12px;
+  outline: none;
 }
 
-.settingsPanel textarea {
-min-height: 70px;
-resize: vertical;
+.settingsField textarea {
+  resize: vertical;
+  min-height: 85px;
 }
 
-.settingsPanel input:focus,
-.settingsPanel textarea:focus,
+.settingsField input:focus,
+.settingsField textarea:focus,
 .settingsPanel select:focus {
-border-color: #a9c7ee;
-background: white;
+  border-color: #9ac8ff;
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.08);
 }
 
-.rangeLabel input[type=“range”] {
-width: 100%;
+.settingsToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border-soft);
 }
 
-.checkboxLabel {
-display: flex !important;
-align-items: center;
-gap: 8px;
+.settingsToggle span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
-.checkboxLabel input {
-width: 16px;
-height: 16px;
+.settingsToggle strong {
+  font-size: 13px;
 }
 
-.checkboxLabel span {
-margin: 0 !important;
-font-size: 12px !important;
+.settingsToggle small {
+  color: var(--muted);
+  font-size: 11px;
 }
 
-.settingsButtons {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 7px;
-margin-top: 14px;
+.settingsToggle input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--blue);
 }
 
-.settingsButtons button,
-.fileImportButton {
-display: flex;
-justify-content: center;
-align-items: center;
-min-height: 36px;
-padding: 8px;
-border-radius: 10px;
-background: #f1f4f7;
-color: #475467;
-font-size: 11px;
-font-weight: 650;
+.memoryTools {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
 }
 
-.settingsButtons .dangerButton {
-grid-column: 1 / -1;
-color: #b42318;
-background: #fff1f0;
+.memoryTools button,
+.fileButton {
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* NOTICE */
+.memoryTools button:hover,
+.fileButton:hover {
+  background: var(--surface-soft);
+}
 
-.mayaNotice {
-position: absolute;
-left: 50%;
-bottom: 76px;
-transform: translateX(-50%);
-z-index: 30;
-max-width: calc(100% - 30px);
-padding: 7px 12px;
-border-radius: 18px;
-background: #263142;
-color: white;
-font-size: 10px;
-box-shadow: 0 8px 22px rgba(15, 23, 42, 0.18);
+.memoryTools .dangerButton {
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+/* CHAT */
+
+.chatArea {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.chatMessages {
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px 18px 24px;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+.chatMessages::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chatMessages::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+.messageRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 13px;
+}
+
+.userRow {
+  justify-content: flex-end;
+}
+
+.mayaRow {
+  justify-content: flex-start;
+}
+
+.messageAvatar {
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #0a84ff, #64b0ff);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.messageBubble {
+  max-width: min(76%, 600px);
+  padding: 10px 12px 7px;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.045);
+}
+
+.userBubble {
+  color: #fff;
+  background: var(--blue);
+  border-bottom-right-radius: 6px;
+}
+
+.mayaBubble {
+  color: #1f2937;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-bottom-left-radius: 6px;
+}
+
+.errorBubble {
+  color: #991b1b;
+  background: #fff5f5;
+  border-color: #fecaca;
+}
+
+.messageText {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.messageTime {
+  margin-top: 4px;
+  text-align: right;
+  font-size: 9px;
+  opacity: 0.55;
+}
+
+.messageImage {
+  display: block;
+  width: min(280px, 100%);
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 7px;
+}
+
+.typingBubble {
+  min-width: 58px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px;
+}
+
+.typingDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #9ca3af;
+  animation: typing 1.2s infinite ease-in-out;
+}
+
+.typingDot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typingDot:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 /* ATTACHMENT */
 
 .attachmentPreview {
-flex: 0 0 auto;
-display: flex;
-align-items: center;
-gap: 9px;
-padding: 8px 12px;
-border-top: 1px solid #e9edf2;
-background: #fff;
+  flex: 0 0 auto;
+  margin: 0 14px 7px;
+  padding: 7px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(15, 23, 42, 0.05);
 }
 
 .attachmentPreview img {
-width: 42px;
-height: 42px;
-object-fit: cover;
-border-radius: 9px;
+  width: 46px;
+  height: 46px;
+  object-fit: cover;
+  border-radius: 9px;
 }
 
-.attachmentPreview div {
-flex: 1;
-min-width: 0;
+.attachmentInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.attachmentPreview strong,
-.attachmentPreview small {
-display: block;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
+.attachmentInfo strong {
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.attachmentPreview strong {
-font-size: 11px;
+.attachmentInfo span {
+  color: var(--muted);
+  font-size: 10px;
 }
 
-.attachmentPreview small {
-margin-top: 2px;
-color: #98a2b3;
-font-size: 9px;
-}
-
-.attachmentPreview button {
-width: 28px;
-height: 28px;
-border-radius: 50%;
-background: #f1f3f5;
-color: #667085;
+.attachmentPreview > button {
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: pointer;
+  font-size: 17px;
 }
 
 /* COMPOSER */
 
-.mayaComposer {
-flex: 0 0 auto;
-display: flex;
-align-items: flex-end;
-gap: 7px;
-padding: 9px 10px max(9px, env(safe-area-inset-bottom));
-background: rgba(255, 255, 255, 0.98);
-border-top: 1px solid #e8ecf1;
-z-index: 20;
+.composerArea {
+  flex: 0 0 auto;
+  padding: 9px 13px 11px;
+  background: #fff;
+  border-top: 1px solid var(--border-soft);
+  position: relative;
+  z-index: 10;
 }
 
-.mayaComposer textarea {
-flex: 1;
-min-width: 0;
-max-height: 100px;
-min-height: 39px;
-resize: none;
-outline: none;
-border: 1px solid #e1e6ec;
-border-radius: 20px;
-padding: 10px 13px;
-background: #f6f8fa;
-color: #263142;
-line-height: 18px;
-font-size: 13px;
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 6px;
+  background: #f4f6f8;
+  border: 1px solid #e5e7eb;
+  border-radius: 17px;
 }
 
-.mayaComposer textarea:focus {
-background: white;
-border-color: #c9d8ea;
+.composer textarea {
+  flex: 1;
+  min-width: 0;
+  max-height: 110px;
+  min-height: 36px;
+  padding: 9px 4px;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: transparent;
+  color: var(--text);
+  line-height: 1.4;
+  font-size: 14px;
+}
+
+.composer textarea::placeholder {
+  color: #9ca3af;
 }
 
 .composerButton,
 .sendButton {
-width: 39px;
-height: 39px;
-flex: 0 0 39px;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: 0.18s ease;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform 0.16s ease,
+    background 0.16s ease;
 }
 
 .composerButton {
-background: #f0f3f6;
-color: #5f6b7a;
-font-size: 17px;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: #5f6368;
 }
 
 .composerButton:hover {
-background: #e6ebf0;
+  background: #eef5ff;
+  color: var(--blue);
 }
 
-.micButton.active {
-background: #fee2e2;
-color: #dc2626;
+.voiceButton.active {
+  background: #fff1f2;
+  border-color: #fecdd3;
 }
 
 .sendButton {
-background: #1677ff;
-color: white;
-font-size: 17px;
-box-shadow: 0 5px 12px rgba(22, 119, 255, 0.2);
+  background: var(--blue);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 800;
+  box-shadow: 0 4px 10px rgba(0, 122, 255, 0.22);
 }
 
 .sendButton:hover:not(:disabled) {
-transform: translateY(-1px);
-background: #0868e7;
+  background: var(--blue-dark);
+  transform: translateY(-1px);
 }
 
-.sendButton:disabled {
-opacity: 0.4;
-cursor: default;
+.composerHint {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 4px 0;
+  color: #9ca3af;
+  font-size: 9px;
 }
 
 /* ANIMATIONS */
 
-@keyframes livePulse {
-0%,
-100% {
-opacity: 1;
-transform: scale(1);
-}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 
-50% {
-opacity: 0.35;
-transform: scale(0.7);
-}
-}
-
-@keyframes blink {
-0%,
-42%,
-46%,
-100% {
-transform: scaleY(1);
-}
-
-44% {
-transform: scaleY(0.08);
-}
-}
-
-@keyframes naturalReact {
-0% {
-transform: scale(1) translateY(0);
-}
-
-35% {
-transform: scale(1.025) translateY(-3px);
-}
-
-65% {
-transform: scale(1.01) translateY(1px);
-}
-
-100% {
-transform: scale(1) translateY(0);
-}
-}
-
-@keyframes thinkingMotion {
-0%,
-100% {
-transform: translateX(0) rotate(0deg);
-}
-
-50% {
-transform: translateX(4px) rotate(0.8deg);
-}
-}
-
-@keyframes speakingMotion {
-0%,
-100% {
-transform: translateY(0);
-}
-
-50% {
-transform: translateY(-1px);
-}
-}
-
-@keyframes mouthTalk {
-from {
-transform: scaleY(0.75);
-}
-
-to {
-transform: scaleY(1.55);
-}
-}
-
-@keyframes eyeTalk {
-0%,
-100% {
-transform: translateX(0);
-}
-
-50% {
-transform: translateX(1px);
-}
+  50% {
+    opacity: 0.45;
+    transform: scale(0.75);
+  }
 }
 
 @keyframes voiceBar {
-from {
-height: 5px;
+  0%,
+  100% {
+    height: 7px;
+    opacity: 0.35;
+  }
+
+  50% {
+    height: 22px;
+    opacity: 0.9;
+  }
 }
 
-to {
-height: 15px;
-}
+@keyframes breathing {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-2px) scale(1.008);
+  }
 }
 
-@keyframes thinkingDots {
-from {
-opacity: 0.35;
-transform: translateY(0);
+@keyframes blink {
+  0%,
+  45%,
+  48%,
+  100% {
+    transform: scaleY(1);
+  }
+
+  46%,
+  47% {
+    transform: scaleY(0.08);
+  }
 }
 
-to {
-opacity: 1;
-transform: translateY(-3px);
+@keyframes thinkingFloat {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+
+  50% {
+    transform: translateY(-3px) rotate(-0.5deg);
+  }
 }
+
+@keyframes happyBounce {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-4px) scale(1.015);
+  }
+}
+
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.45;
+  }
+
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
 }
 
 /* MOBILE */
 
-@media (max-width: 600px) {
-.mayaShell {
-width: 100%;
-box-shadow: none;
+@media (max-width: 700px) {
+  .companionShell {
+    max-width: 100%;
+    min-height: 100dvh;
+    box-shadow: none;
+  }
+
+  .topBar {
+    height: 64px;
+    flex-basis: 64px;
+    padding: 0 13px;
+  }
+
+  .brandAvatar {
+    width: 37px;
+    height: 37px;
+  }
+
+  .brandName {
+    font-size: 15px;
+  }
+
+  .liveAiCard {
+    min-height: 210px;
+    padding: 14px 15px;
+    gap: 10px;
+  }
+
+  .mayaVisual {
+    width: 145px;
+    height: 180px;
+    flex-basis: 145px;
+  }
+
+  .mayaFace {
+    transform: scale(0.83);
+  }
+
+  .liveAiName {
+    font-size: 22px;
+  }
+
+  .liveAiReaction {
+    font-size: 11px;
+  }
+
+  .chatMessages {
+    padding: 14px 10px 20px;
+  }
+
+  .messageBubble {
+    max-width: 82%;
+  }
+
+  .messageText {
+    font-size: 13px;
+  }
+
+  .composerArea {
+    padding: 7px 8px 9px;
+  }
+
+  .composerHint {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .composerHint span:last-child {
+    display: none;
+  }
+
+  .settingsPanel {
+    padding: 15px;
+  }
 }
 
-.mayaTopbar {
-height: 62px;
-min-height: 62px;
-}
+@media (max-width: 430px) {
+  .liveAiCard {
+    min-height: 190px;
+  }
 
-.mayaLiveSection {
-padding-top: 7px;
-padding-bottom: 7px;
-}
+  .mayaVisual {
+    width: 125px;
+    flex-basis: 125px;
+  }
 
-.mayaStage {
-height: 184px;
-}
+  .mayaFace {
+    transform: scale(0.7);
+  }
 
-.mayaVisual {
-transform: scale(0.86);
-}
+  .liveAiHeader {
+    gap: 5px;
+  }
 
-.mayaMoodBadge {
-right: 5px;
-bottom: 5px;
-}
+  .liveBadge,
+  .moodBadge {
+    font-size: 9px;
+    padding: 5px 7px;
+  }
 
-.moodSelector button {
-padding: 5px 7px;
-font-size: 9px;
-}
+  .liveAiName {
+    font-size: 19px;
+  }
 
-.mayaChat {
-padding: 14px 10px 12px;
-}
+  .liveAiBars {
+    margin-top: 10px;
+  }
 
-.messageBubble {
-max-width: 82%;
-font-size: 13px;
-}
+  .messageAvatar {
+    width: 24px;
+    height: 24px;
+    flex-basis: 24px;
+    font-size: 10px;
+  }
 
-.settingsPanel {
-top: 67px;
-right: 8px;
-width: calc(100% - 16px);
-}
-}
+  .messageBubble {
+    max-width: 84%;
+  }
 
-@media (max-height: 700px) {
-.mayaStage {
-height: 145px;
-}
-
-.mayaVisual {
-transform: scale(0.68);
-}
-
-.mayaLiveSection {
-padding-top: 5px;
-padding-bottom: 5px;
-}
-
-.moodSelector button {
-padding-top: 3px;
-padding-bottom: 3px;
-}
+  .composerButton,
+  .sendButton {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-*,
-*::before,
-*::after {
-animation-duration: 0.01ms !important;
-animation-iteration-count: 1 !important;
-scroll-behavior: auto !important;
-}
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
