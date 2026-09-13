@@ -1,0 +1,14 @@
+3D MAYA SETUP
+
+1. Replace package.json, app/Companion.js, app/components/MayaLiveAvatar.js,
+   app/globals.css and app/api/chat/route.js with this version.
+2. Run: npm install
+3. Put your VRM model at: public/models/maya.vrm
+4. Run: npm run build
+5. Push to GitHub main and deploy on Vercel.
+
+The live avatar uses @pixiv/three-vrm + three.js.
+It supports idle sway, eye look-at, blinking, mood expressions and timed mouth animation.
+Browser SpeechSynthesis is used by the existing voice feature. True audio-amplitude lip-sync
+requires an audio stream/source that exposes PCM/analyser data; the current implementation
+keeps the mouth animation synchronized to the speaking state.
