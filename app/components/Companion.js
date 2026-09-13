@@ -104,7 +104,6 @@ const [speakingIndex, setSpeakingIndex] = useState(null);
 const [reacting, setReacting] = useState(false);
 
 const chatRef = useRef(null);
-const bottomRef = useRef(null);
 const fileRef = useRef(null);
 const recognitionRef = useRef(null);
 const reactTimerRef = useRef(null);
@@ -176,10 +175,12 @@ useEffect(() => {
 return () => {
 if (reactTimerRef.current) clearTimeout(reactTimerRef.current);
 if (recognitionRef.current) recognitionRef.current.stop();
-if (typeof window !== “undefined”) {
-window.speechSynthesis?.cancel();
-}
+
+  if (typeof window !== "undefined") {
+    window.speechSynthesis?.cancel();
+  }
 };
+
 }, []);
 
 function triggerReaction(duration = 1000) {
@@ -600,11 +601,7 @@ Companion
               className={`messageRow ${isUser ? "userRow" : "mayaRow"}`}
               key={`${index}-${message.content}`}
             >
-              {!isUser && (
-                <div className="messageAvatar">
-                  M
-                </div>
-              )}
+              {!isUser && <div className="messageAvatar">M</div>}
               <div className="messageContent">
                 {message.image && (
                   <img
@@ -650,11 +647,12 @@ Companion
                 <span className="typingDot" />
                 <span className="typingDot" />
               </div>
-              <div className="messageMeta">Maya is thinking...</div>
+              <div className="messageMeta">
+                Maya is thinking...
+              </div>
             </div>
           </div>
         )}
-        <div ref={bottomRef} />
       </div>
     </section>
     {notice && (
@@ -708,9 +706,7 @@ Companion
             }
           }}
           placeholder={
-            listening
-              ? "Maya sedang dengar..."
-              : "Message Maya..."
+            listening ? "Maya sedang dengar..." : "Message Maya..."
           }
           disabled={loading}
         />
