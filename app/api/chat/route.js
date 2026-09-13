@@ -48,7 +48,7 @@ function cleanMessages(messages) {
 
 function systemPrompt(mood, memory) {
   return `
-You are Maya, a warm and intelligent Malaysian AI assistant/companion.
+You are Maya, a warm and intelligent Malaysian AI assistant.
 
 PERSONALITY
 - Friendly, caring, playful, calm and natural.
@@ -63,7 +63,7 @@ PERSONALITY
 
 MOOD
 Current software mood: ${mood}.
-Use this only to adjust your tone and wording.
+Use this only to adjust tone and wording.
 It is a software state, not a real emotion.
 
 LONG-TERM MEMORY
@@ -81,9 +81,7 @@ CONVERSATION
 - Complex questions can receive clearer detailed explanations.
 
 INTERNAL BEHAVIOUR
-You may internally process conversation context, personality, mood,
-memory, response strategy, drafting and refinement before producing
-the answer.
+You may internally process context, personality, mood, memory and response strategy.
 
 The internal process must NEVER be shown to the user.
 
@@ -103,11 +101,10 @@ NEVER expose:
 - response strategy
 - drafting
 - refinement
-- final polishing process
 - workflow steps
 - internal labels
 
-NEVER output headings such as:
+Do not output headings such as:
 "Context"
 "Persona"
 "Mood"
@@ -115,13 +112,11 @@ NEVER output headings such as:
 "Drafting Response"
 "Draft"
 "Refining"
-"Refining for Maya Persona"
-"Final Polish"
 "Analysis"
 "Reasoning"
 "Thought Process"
 
-Do the processing internally and output only Maya's final natural reply.
+Output only Maya's final natural reply.
 `.trim();
 }
 
@@ -180,6 +175,30 @@ function validateImages(messages) {
   return { ok: true };
 }
 
+function getRateLimitInfo(response) {
+  return {
+    retryAfter: response.headers.get("retry-after"),
+
+    limitRequests:
+      response.headers.get("x-ratelimit-limit-requests"),
+
+    remainingRequests:
+      response.headers.get("x-ratelimit-remaining-requests"),
+
+    resetRequests:
+      response.headers.get("x-ratelimit-reset-requests"),
+
+    limitTokens:
+      response.headers.get("x-ratelimit-limit-tokens"),
+
+    remainingTokens:
+      response.headers.get("x-ratelimit-remaining-tokens"),
+
+    resetTokens:
+      response.headers.get("x-ratelimit-reset-tokens"),
+  };
+}
+
 export async function GET() {
   return Response.json({
     ok: true,
@@ -217,8 +236,7 @@ export async function POST(req) {
         {
           ok: false,
           errorType: "INVALID_JSON",
-          error:
-            "Request body is not valid JSON.",
+          error: "Request body is not valid JSON.",
         },
         { status: 400 }
       );
@@ -235,15 +253,13 @@ export async function POST(req) {
         {
           ok: false,
           errorType: "NO_MESSAGES",
-          error:
-            "No valid messages were supplied.",
+          error: "No valid messages were supplied.",
         },
         { status: 400 }
       );
     }
 
-    const imageValidation =
-      validateImages(messages);
+    const imageValidation = validateImages(messages);
 
     if (!imageValidation.ok) {
       return Response.json(
@@ -277,8 +293,7 @@ export async function POST(req) {
       detectMood(plainLast) ||
       requestedMood;
 
-    const hasImage =
-      containsImage(messages);
+    const hasImage = containsImage(messages);
 
     const model = hasImage
       ? (
@@ -307,14 +322,17 @@ export async function POST(req) {
       temperature: 0.8,
       max_tokens: 700,
 
-      /*
-       * IMPORTANT
-       *
-       * GPT-OSS is a reasoning model.
-       * Do not return its reasoning to the client.
-       */
+      // Do not expose reasoning to the frontend.
       include_reasoning: false,
     };
+
+    /*
+     * ONE request only:
+     * Browser -> /api/chat -> Groq
+     *
+     * No retry.
+     * No second Groq request.
+     */
 
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
@@ -340,6 +358,46 @@ export async function POST(req) {
       data = null;
     }
 
+    /*
+     * RATE LIMIT
+     *
+     * Groq exposes rate-limit information
+     * through HTTP response headers.
+     */
+    if (response.status === 429) {
+      const rateLimit = getRateLimitInfo(response);
+
+      console.error("GROQ RATE LIMIT:", {
+        status: response.status,
+        model,
+        error: data?.error || raw,
+        rateLimit,
+      });
+
+      return Response.json(
+        {
+          ok: false,
+          errorType: "RATE_LIMIT",
+
+          status: 429,
+
+          error:
+            data?.error?.message ||
+            "Groq rate limit reached.",
+
+          model,
+
+          rateLimit,
+        },
+        {
+          status: 429,
+          headers: {
+            "Cache-Control": "no-store",
+          },
+        }
+      );
+    }
+
     if (!response.ok) {
       console.error("GROQ API ERROR:", {
         status: response.status,
@@ -350,17 +408,23 @@ export async function POST(req) {
       return Response.json(
         {
           ok: false,
+
           errorType: "GROQ_API_ERROR",
+
           status: response.status,
+
           type:
             data?.error?.type ||
             "groq_api_error",
+
           code:
             data?.error?.code ||
             null,
+
           error:
             data?.error?.message ||
             `Groq HTTP ${response.status}`,
+
           model,
         },
         { status: 502 }
@@ -371,6 +435,14 @@ export async function POST(req) {
       data?.choices?.[0]?.message?.content?.trim();
 
     if (!text) {
+      console.error(
+        "GROQ EMPTY RESPONSE:",
+        {
+          model,
+          response: data,
+        }
+      );
+
       return Response.json(
         {
           ok: false,
