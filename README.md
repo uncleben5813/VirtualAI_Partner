@@ -25,7 +25,7 @@ Create `.env.local` locally or add these to Vercel:
 ```env
 GROQ_API_KEY=your_secret_key
 GROQ_MODEL=openai/gpt-oss-120b
-GROQ_VISION_MODEL=meta-llama/llama-4-scout-17b-16e-instruct
+GROQ_VISION_MODEL="qwen/qwen3.6-27b"
 ```
 
 `GROQ_API_KEY` is only read by `app/api/chat/route.js`, so it is not exposed to the browser.
