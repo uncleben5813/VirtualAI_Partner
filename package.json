@@ -1,15 +1,7 @@
 {
-  "name": "maya-ai-companion-v3",
+  "name": "maya-ai-companion-full",
   "private": true,
-  "version": "3.0.0",
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
-  },
-  "dependencies": {
-    "next": "^15.2.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
-  }
+  "version": "4.0.0",
+  "scripts": {"dev":"next dev","build":"next build","start":"next start"},
+  "dependencies": {"next":"^15.2.0","react":"^19.0.0","react-dom":"^19.0.0"}
 }

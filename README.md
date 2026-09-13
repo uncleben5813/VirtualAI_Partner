@@ -1,34 +1,39 @@
-# Maya AI Companion — Full V3
+# Maya AI Companion — Full Version
 
-Included:
-- Groq AI brain
-- Server-side API key
-- Long-term memory stored locally
-- Conversation history persistence
-- Mood/emotion software state
-- Maya personality
-- Mood-aware responses
-- Voice input using browser Speech Recognition where supported
-- Voice output using browser Speech Synthesis
-- Image attachment + optional Groq vision model
-- Settings/personality controls
-- Mobile-friendly UI
-- Error/fallback handling
-- New chat / clear history
+This build is based directly on the supplied `VirtualAI_Partner-main` project.
+
+## Included
+- Realistic Maya photo-based visual asset states (not CSS/cartoon face)
+- Mood states: happy, caring, playful, calm, upset
+- Thinking / talking / listening visual states
+- Subtle eye/portrait movement and speaking/listening animation
+- Groq server-side AI brain
+- Personality + language settings sent to Groq
+- Mood-aware replies
+- Long-term memory extraction and persistence in browser localStorage
+- Conversation persistence
+- Voice input via Web Speech API where supported
+- Voice output via SpeechSynthesis
+- Image upload + Groq vision model support
 - Export/import memory backup
-- Persistence after refresh/closing the app
+- New chat / clear memory
+- Mobile responsive UI
+- LIVE AI panel stays fixed while only the chat area scrolls
+- Existing project structure retained; no extra frontend framework required
 
 ## Environment variables
 
-Create `.env.local` locally or add these to Vercel:
+Set these in Vercel Project Settings → Environment Variables:
 
 ```env
 GROQ_API_KEY=your_secret_key
 GROQ_MODEL=openai/gpt-oss-120b
-GROQ_VISION_MODEL="qwen/qwen3.6-27b"
+GROQ_VISION_MODEL=meta-llama/llama-4-scout-17b-16e-instruct
 ```
 
-`GROQ_API_KEY` is only read by `app/api/chat/route.js`, so it is not exposed to the browser.
+`GROQ_API_KEY` is server-side only and is read by `app/api/chat/route.js`.
+
+If your Groq account uses different currently available model IDs, keep `GROQ_API_KEY` and replace the two model variables with the IDs available in your account.
 
 ## Run
 
@@ -37,43 +42,15 @@ npm install
 npm run dev
 ```
 
-Then open the local URL shown by Next.js.
-
 ## Vercel
 
-1. Import the project/repository.
-2. Add `GROQ_API_KEY` under Project Settings → Environment Variables.
-3. Redeploy.
-4. Do NOT put `GROQ_API_KEY` in `NEXT_PUBLIC_*`.
+1. Push this project to GitHub.
+2. Connect the repository to Vercel.
+3. Add the environment variables above.
+4. Redeploy.
 
-## Persistence
+Do not use `NEXT_PUBLIC_GROQ_API_KEY`.
 
-The browser stores:
-- conversation history
-- mood
-- long-term memory
-- settings
+## Important persistence note
 
-in localStorage. It survives normal refreshes and closing/reopening the app on the same browser/device.
-
-Use **Export backup** to create a JSON backup and **Import backup** to restore it elsewhere.
-
-## Voice
-
-Voice features depend on the browser/device:
-- Input: Web Speech API / webkitSpeechRecognition
-- Output: SpeechSynthesis
-
-Microphone permission is required for voice input.
-
-## Images
-
-Images are previewed in the chat and sent to the server as data URLs. When an image is present, the backend switches to `GROQ_VISION_MODEL`.
-
-If your Groq account/model does not support the configured vision model, change `GROQ_VISION_MODEL` to a vision-capable model available to your account.
-
-## Important security note
-
-The chat history and long-term memory in this V3 are client-side local persistence. They are not a cloud database and are not automatically synchronized across devices.
-
-For true cross-device permanent memory, the next upgrade should use a database/auth layer (for example PostgreSQL/Supabase/Firebase) while keeping the Groq API key server-side.
+Chat, memory, mood and settings persist in the same browser/device using localStorage. They are not a cloud database and will not automatically sync between devices.
